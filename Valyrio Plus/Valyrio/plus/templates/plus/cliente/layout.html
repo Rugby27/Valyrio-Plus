@@ -5,7 +5,7 @@
     <head>
         <title>{% block title %}Valyrio Plus{% endblock %}</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-        <link href="{% static 'plus/styles.css' %}" rel="stylesheet">
+        <link href="{% static '/stylesCliente.css' %}" rel="stylesheet">
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
@@ -28,22 +28,7 @@
         <link rel="shortcut icon" href="{% static 'images/valyrio_plus.png' %}" type="image/png">
 
         <style>
-            body {
-                margin: 0;
-                padding: 0;
-                min-height: 100vh;
-                background-image: linear-gradient(135deg, rgba(161,162,10, 0.768) 0%, rgba(161,162,10, 0.768) 11%,transparent 11%, transparent 22%,rgba(26,18,18, 0.6) 22%, rgba(26,18,18, 0.6) 59%,transparent 59%, transparent 76%,rgba(65,64,64, 0.6) 76%, rgba(65,64,64, 0.6) 100%), 
-                linear-gradient(45deg, transparent 0%, transparent 23%,rgb(9,9,9) 23%, rgb(9,9,9) 34%,rgb(32,32,31) 34%, rgb(32,32,31) 57%,transparent 57%, transparent 58%,rgb(9,9,9) 58%, rgb(9,9,9) 100%), 
-                linear-gradient(90deg, rgba(161,162,10, 0.768),rgba(161,162,10, 0.768));
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-            }
-    
-            .custom-navbar {
-                max-width: 98%; /* Ajusta el ancho máximo de la barra de navegación */
-                margin: 10px auto; /* Agrega espacio en la parte superior y centra el nav */
-            }
+
         </style>
     </head>
     <body>
@@ -71,15 +56,17 @@
             <!-- Perfil e icono SVG al lado derecho -->
             <div class="d-flex align-items-center ms-auto">
                 <!-- Primer ícono SVG -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="white" class="bi bi-cart" viewBox="0 0 16 16">
+                 <a href="{% url 'carrito' %}"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="white" class="bi bi-cart" viewBox="0 0 16 16">
                     <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
                 </svg>
-                
+                </a>
                 <!-- Espacio extra entre los íconos usando ms-3 -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="white" class="bi bi-person-circle ms-3" viewBox="0 0 16 16">
+                <a href=" {% url 'perfil' %} ">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="white" class="bi bi-person-circle ms-3" viewBox="0 0 16 16">
                     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
                     <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
                 </svg>
+            </a>
             </div>
             
 
@@ -91,5 +78,22 @@
         
         {% block body %}
         {% endblock %}
+
+        <div class="container text-center mt-5">
+            <div class="row">
+                <div class="col">
+                    <center>
+                        <div class="iconos-sociales fixed-bottom">
+                            <a href="#" target="_blank" class="mx-2"><img loading="lazy" alt="Sígueme en YouTube" height="40" width="40" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgGxjm__TS1-sOnf69Vbppx-u8CX1ltlmqqtDey3Gml5aV2kZ1BJsK94hMPF-cn870hd7Jk1bx9E50oPbA1fanb90M_2eoVUnnlSQ-Q_axbKVsDmsla6hPg-mRT-9FsPx0coSeVLmQppAbN/s0/Youtube-icono.png" title=" Sigue a Valyrio Plus en YouTube "/></a>
+                            <a href="#" target="_blank" class="mx-2"><img loading="lazy" alt="Sígueme en Facebook" height="40" width="40" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh6vlV5enwWRJSXPWHkLi_QEhcy0OAwMgVAqp4F0dvu5sJ5zMBOSAPoqw4ZrMk6GaS_YUtjrK6p_qrHJipWOJz_Ib3NIppNWwx8se0fmswGW1YhYOT4lzTZXssDtPNuzZ7KxvJGR3RDarUt/s0/facebook-icono.png" title="Sigue a Valyrio Plus en Facebook"/></a>
+                            <a href="#" target="_blank" class="mx-2"><img loading="lazy" alt="Sígueme en Instagram" height="40" width="40" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEioycSf-8NI3Ff15eeXtdXUO4e888671ildrsPBjKJnTFjzSymZi95xweZpk0Vc6zll0WDyE0pBGj3PWL564QS8VkRxeh_PbW6y6sT9dWJq-xHh1ohUJN737-Qe-c12TRC2kUAbf7TBzxK5/s0/Instagram-icono.png" title="Sigue a Valyrio Plus en Instagram"/></a>
+                            <a href="#" target="_blank" class="mx-2"><img loading="lazy" alt="Sígueme en WhatsApp" height="40" width="40" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh1fwppWJk-Z8OVvyOtTxSxBmUMIt702HOt6OSOCVtrKG5GLxCRnPxu6bSj0GDEI3q-FugFOkb82rCvBYMYeM0648TQOjJk9-nFbI4hkOLTpDY3qL-qga9HPTB052Eqay4w3hHZnmW6lENj/s0/whatsapp-icono.png" title="Sigue a Valyrio Plus en WhatsApp"/></a>
+                            <a href="#" target="_blank" class="mx-2"><img loading="lazy" alt="Sígueme en TikTok" height="40" width="40" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiFv8UKZ1-41VtEZOmOWZfuQSeNlkHBnbzmMYBIWVbiiEPWv28j9QmxHUOKceoGNe-6XEk31OnWLoNj-nTWrAK8mba-yMPPEqZlLMj3AI3_nnygxwxamLLKrALutw3nRMaDE2_Hzl7MLcWH/s0/tiktok-icono-oscuro.png" title="Sigue a Valyrio Plus en TikTok"/></a>
+                        </div>
+                    </center>
+                    
+                </div>
+            </div>
+        </div>
     </body>
 </html>

@@ -1,0 +1,16 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+body {
+    background-image: 
+    linear-gradient(90deg, transparent 0%, transparent 88%, rgba(184, 182, 26, 0.3) 88%, rgba(184, 182, 26, 0.3) 93%, transparent 93%, transparent 100%),
+    linear-gradient(135deg, transparent 0%, transparent 83%, rgba(203, 198, 21, 0.3) 83%, rgba(203,198,21, 0.73) 91%, transparent 91%, transparent 100%),
+    linear-gradient(0deg, transparent 0%, transparent 43%, rgba(203,198,21, 0.73) 43%, rgba(211, 195, 24, 0.3) 50%, transparent 50%, transparent 100%),
+    linear-gradient(135deg, transparent 0%, transparent 16%,rgba(203,198,21, 0.73) 16%, rgba(255, 235, 25, 0.3) 56%, transparent 56%, transparent 100%),
+    linear-gradient(90deg, rgb(5, 0, 0), rgb(5, 0, 0));
+}
+
+
+

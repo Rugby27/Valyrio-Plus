@@ -1,0 +1,51 @@
+{% extends "plus/administracion/layout.html" %}
+
+{% block body %}
+<style>
+    body{
+        color: azure;
+    }
+</style>
+    <div class="container">
+        <h1>Registrar una nueva Regalía</h1>
+        <form action="{% url 'registro_regalias' %}" method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="cantidad">Cantidad:</label>
+                <input type="number" id="cantidad" name="cantidad" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="monto_total">Monto Total:</label>
+                <input type="number" step="0.01" id="monto_total" name="monto_total" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_regalia">Fecha de Regalía:</label>
+                <input type="date" id="fecha_regalia" name="fecha_regalia" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="beneficiado">Beneficiado:</label>
+                <input type="text" id="beneficiado" name="beneficiado" class="form-control" maxlength="50" required>
+            </div>
+
+            <div class="form-group">
+                <label for="justificacion">Justificación:</label>
+                <input type="text" id="justificacion" name="justificacion" class="form-control" maxlength="50" required>
+            </div>
+
+            <div class="form-group">
+                <label for="producto">Producto:</label>
+                <select id="producto" name="producto" class="form-control" required>
+                    {% for producto in productos %}
+                        <option value="{{ producto.id }}">{{ producto.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Registrar Regalía</button>
+        </form>
+    </div>
+{% endblock %}

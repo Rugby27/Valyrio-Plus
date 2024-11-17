@@ -1,0 +1,41 @@
+
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-image: linear-gradient(135deg, rgba(161,162,10, 0.768) 0%, rgba(161,162,10, 0.768) 11%,transparent 11%, transparent 22%,rgba(26,18,18, 0.6) 22%, rgba(26,18,18, 0.6) 59%,transparent 59%, transparent 76%,rgba(65,64,64, 0.6) 76%, rgba(65,64,64, 0.6) 100%), 
+    linear-gradient(45deg, transparent 0%, transparent 23%,rgb(9,9,9) 23%, rgb(9,9,9) 34%,rgb(32,32,31) 34%, rgb(32,32,31) 57%,transparent 57%, transparent 58%,rgb(9,9,9) 58%, rgb(9,9,9) 100%), 
+    linear-gradient(90deg, rgba(161,162,10, 0.768),rgba(161,162,10, 0.768));
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+}
+
+.custom-navbar {
+    max-width: 98%; /* Ajusta el ancho máximo de la barra de navegación */
+    margin: 10px auto; /* Agrega espacio en la parte superior y centra el nav */
+}
+
+.Hola {
+    transition: box-shadow 0.3s ease;
+}
+
+.Hola:hover {
+    box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.8);
+}
+.iconos-sociales img{ 
+    transition: all 0.5s ease-out; 
+    border-radius: 50px;
+}
+.iconos-sociales img:hover{
+    box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.1);
+    transform: translate(0px, -10px); 
+}
+.fixed-bottom {
+    position: static;
+    bottom: 0;
+    width: 100%;
+    padding: 10px 0;
+}

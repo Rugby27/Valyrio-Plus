@@ -1,0 +1,41 @@
+{% extends "plus/administracion/layout.html" %}
+
+{% block body %}
+    <div>
+        <form action="{% url 'registro_inversion' %}">
+            {% csrf_token %}
+            <button type="submit">Registar Nueva Coleccion</button>
+        </form>
+    </div>
+
+
+ <div style="display: flex; gap: 10px; flex-grow: 1;">
+        <table style="flex: 1;" class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Producto</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inversion in inversiones %}
+                <tr>
+                    <th scope="row">{{ inversion.id }}</th>
+                    <td>{{ inversion.fecha_inversion }}</td>
+
+                    {% for detalle in inversion.detalles %}
+                    <td>{{ detalle.producto.nombre }}</td>
+                    <td>{{ detalle.cantidad }}</td>
+                    {% endfor %}
+
+                    <td>{{ inversion.total_inversion }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+{% endblock %}

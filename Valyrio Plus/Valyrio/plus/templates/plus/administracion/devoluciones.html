@@ -1,0 +1,74 @@
+{% extends "plus/administracion/layout.html" %}
+
+{% block body %}
+<div style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; gap: 10px; flex-grow: 1;">
+       
+        <table style="flex: 1;" class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">prods</th>
+                    <th scope="col">Motivos</th>
+                    <th scope="col">Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for devolucion in devoluciones_confirmadas %}
+                <tr>
+                    <th scope="row">{{ devolucion.cliente.nombre }}</th>
+                    <td>
+                        <ul>
+                            {% for detalle in devolucion.compra.detallecompra_set.all %}
+                                <li>{{ detalle.producto.nombre }}: {{ detalle.cantidad }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ devolucion.descripcion }}</td>
+                    <td>{{ devolucion.fecha_devolucion  }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <table style="flex: 1;" class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">prods</th>
+                    <th scope="col">Motivos</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Aceptar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for devolucion in devoluciones_no_confirmadas %}
+                <tr>
+                    <th scope="row">{{ devolucion.cliente.nombre }}</th>
+                    <td>
+                        <ul>
+                            {% for detalle in devolucion.compra.detallecompra_set.all %}
+                                <li>{{ detalle.producto.nombre }}: {{ detalle.cantidad }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ devolucion.descripcion }}</td>
+                    <td>{{ devolucion.fecha_devolucion  }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'aceptarDevolucion' devolucion.id %}">
+                            {% csrf_token %}
+                                <input type="hidden" name="id" id="id" value="{{ devolucion.id }}">
+                                
+                                    <button type="submit" class="btn btn-primary">Asignar</button>
+                                
+                            </td>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

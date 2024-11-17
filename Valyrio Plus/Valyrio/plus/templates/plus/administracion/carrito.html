@@ -1,0 +1,101 @@
+{% extends "plus/administracion/layout.html" %}
+
+{% block body %}
+{% if detalles %}
+<style>
+    body{
+        overflow-x: hidden;
+    }
+    /* Estilos para el contenedor de entrada numérica */
+.quantity-input {
+    display: flex;
+    align-items: center;
+    max-width: 120px;
+}
+
+/* Estilo del botón */
+.quantity-input .btn {
+    width: 32px;
+    height: 38px;
+    padding: 0;
+    border: 1px solid #ced4da;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Estilo del input de cantidad */
+.quantity-input .form-control {
+    text-align: center;
+    font-size: 16px;
+    border-left: none;
+    border-right: none;
+}
+
+</style>
+<form action="{% url 'Compra' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+        <!-- Sección izquierda: Detalles del producto en el carrito -->
+        <div class="col-md-7">
+            {% for detalle in detalles %}
+            <div class="card mb-3">
+                <div class="row g-0 align-items-center">
+                    <div class="col-md-4">
+                        <img src="{{ detalle.producto.imagen }}" class="img-fluid rounded-start" alt="Imagen del producto">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h6 class="card-title">Producto: {{ detalle.producto.nombre }}</h6>
+                            <p>{{ detalle.producto.descripcion }}</p>
+                            <h6>Precio: {{ detalle.producto.precio }}</h6>
+                            <!-- Input para la cantidad, con un name único para cada producto -->
+                            <div class="input-group quantity-input">
+                                <button type="button" class="btn btn-outline-secondary" onclick="decrement('{{ detalle.id }}')">-</button>
+                                <input type="number" name="cantidad_{{ detalle.id }}" id="cantidad_{{ detalle.id }}" min="1" value="{{ detalle.cantidad }}" class="form-control text-center">
+                                <button type="button" class="btn btn-outline-secondary" onclick="increment('{{ detalle.id }}')">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Sección derecha: Formulario de información de envío y botón de compra -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Información de envío</h5>
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Correo</label>
+                        <input type="text" name="cliente" id="cliente" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Nombre</label>
+                        <input type="text" name="name" id="name" class="form-control" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark mt-3">Realizar compra</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% else %}
+    <p>No hay productos en tu carrito.</p>
+{% endif %}
+
+<script>
+    function increment(id) {
+    const input = document.getElementById(`cantidad_${id}`);
+    input.stepUp(); // Incrementa el valor en 1
+}
+
+function decrement(id) {
+    const input = document.getElementById(`cantidad_${id}`);
+    if (input.value > 1) input.stepDown(); // Decrementa el valor en 1, sin permitir valores menores a 1
+}
+
+</script>
+{% endblock %}

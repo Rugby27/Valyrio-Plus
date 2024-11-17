@@ -1,0 +1,32 @@
+{% extends "plus/administracion/layout.html" %}
+
+{% block body %}
+
+ <div style="display: flex; gap: 10px; flex-grow: 1;">
+        <table style="flex: 1;" class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Trabajador</th>
+                    <th scope="col">Tipo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for compra in compras %}
+                <tr>
+                    <th scope="row">{{ compra.id }}</th>
+                    <td>{{ compra.cliente.nombre }}</td>
+                    <td>{{ compra.trabajador.nombre }}</td>
+                    {% if compra.tipo_compra == False %}
+                        <td>Online</td>
+                    {% else %}
+                        <td>Tienda</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+{% endblock %}

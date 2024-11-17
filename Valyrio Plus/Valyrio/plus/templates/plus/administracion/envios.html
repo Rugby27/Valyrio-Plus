@@ -1,0 +1,76 @@
+{% extends "plus/administracion/layout.html" %}
+
+{% block body %}
+<!------------------------------------------------------------------------------>
+<!--Falta la tarifa de los envios pero despues valido eso-->
+<!------------------------------------------------------------------------------>
+
+<div style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; gap: 10px; flex-grow: 1;">
+       
+        <table style="flex: 1;" class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#Envio</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Dirección</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Repartidor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for envio in envios_con_repartidor %}
+                <tr>
+                    <th scope="row">{{ envio.id }}</th>
+                    <td>{{ envio.compra.cliente.nombre }}</td>
+                    <td>{{ envio.direccion }}</td>
+                    <td>{{ envio.tarifa_envio }}</td>
+                    <td>{{ envio.repartidor.nombre }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <table style="flex: 1;" class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Dirección</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Tarifa Envío</th>
+                    <th scope="col">Repartidor</th>
+                    <th scope="col">Asignar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for envio in envios_sin_repartidor %}
+                <tr>
+                    <th scope="row">{{ envio.compra.cliente.nombre }}</th>
+                    <td>{{ envio.direccion }}</td>
+                    <td>{{ envio.compra.total }}</td>
+                    <td>{{ envio.tarifa_envio }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'asignar_repartidor' envio.id %}">
+                            {% csrf_token %}
+                            <select name="repartidor" id="repartidor_{{ envio.id }}">
+                                {% for repartidor in repartidores %}
+                                    <option value="{{ repartidor.id }}">{{ repartidor.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                            <td>
+                                <button type="submit" class="btn btn-primary">Asignar</button>
+                            </td>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!------------------------------------------------------------------------------>
+<!--Fin comentaio-->
+<!------------------------------------------------------------------------------>
+
+{% endblock %}

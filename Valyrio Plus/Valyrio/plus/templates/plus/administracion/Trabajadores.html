@@ -1,0 +1,67 @@
+{% extends "plus/administracion/layout.html" %}
+
+{% block body %}
+<div style="display: flex; flex-direction: column; gap: 10px;">
+    {% if  user.is_superuser %}
+    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+        <!--Activar los botone y crear su views-->
+        <a href="{% url 'registerr' %}">
+            <button style="padding: 10px 20px; font-size: 16px; border-radius: 5px;">Nuevo trabajador</button>
+        </a>
+        <button style="padding: 10px 20px; font-size: 16px; border-radius: 5px;">Nuevo Repartidor</button>
+        <!--Fin comentario-->
+    </div>
+    {% endif %}
+    <!---------------------------------------------------------------------------------------------->
+    <!--Aceder a los registros para despido o ¿sancion? o no se la verdad preguntar que poner aqui-->
+    <!---------------------------------------------------------------------------------------------->
+    <div style="display: flex; gap: 10px; flex-grow: 1;">
+        <table style="flex: 1;" class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellido</th>
+                    <th scope="col">Ventas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trabajador in trabajadores %}
+                <tr>
+                    <th scope="row">{{ trabajador.id }}</th>
+                    <td>{{ trabajador.nombre }}</td>
+                    <td>{{ trabajador.apellido }}</td>
+                    <td>{{ trabajador.num_compras }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <table style="flex: 1;" class="table">
+            <thead class="thead-light">
+                
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellido</th>
+                    <th scope="col">Entregas</th>
+                </tr>
+                
+            </thead>
+            <tbody>
+                {% for repartidor in repartidores %}
+                <tr>
+                    <th scope="row">{{ repartidor.id }}</th>
+                    <td>{{ repartidor.nombre }}</td>
+                    <td>{{ repartidor.apellido }}</td>
+                    <td>{{ repartidor.num_envios }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-------------------------------------------------------------------->
+    <!--Fin comentario-->
+    <!-------------------------------------------------------------------->
+
+</div>
+{% endblock %}
