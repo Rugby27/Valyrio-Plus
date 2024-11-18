@@ -98,7 +98,7 @@ class Compra(models.Model):
     total = models.FloatField()
     fecha_compra = models.DateField()
     tipo_compra = models.BooleanField()
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, null=True, blank=True)
     trabajador = models.ForeignKey(Trabajador, on_delete=models.SET_NULL, null=True, blank=True)
     metodo_pago = models.ForeignKey(MetodoPago, on_delete=models.CASCADE)
     comfimada = models.BooleanField(default=0)

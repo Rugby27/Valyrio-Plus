@@ -194,7 +194,7 @@ def login_traba(request):
     if request.method == "POST":
         # Attempt to sign user in
         username = request.POST["username"]
-        password = int(request.POST["password"])
+        password = request.POST["password"]
 
         print(username)
         print(password)
@@ -306,13 +306,21 @@ def compraLocal(request):
         if producto_id is None or not producto_id.isdigit():
             return HttpResponse("ID del producto inválido")
         
-        cliente = request.user.cliente  # Esto obtiene el cliente asociado al usuario logueado
+        user = User.objects.get(username="Conde18")
+
+# Verifica si tiene un trabajador asociado
+        print(hasattr(user, 'trabajador'))  # Esto debería devolver True
+        if hasattr(user, 'trabajador'):
+            print(user.trabajador)
+
+        cliente = request.user.trabajador
+        print(cliente)
         if not cliente:
             return HttpResponse("El usuario no tiene un cliente asociado.")
         
         produc = get_object_or_404(Producto, id=producto_id)
 
-        compra = Compra.objects.filter(cliente=cliente, comfimada=False).first()
+        compra = Compra.objects.filter(trabajador=cliente, comfimada=False).first()
 
         if compra:
             DetalleCompra.objects.create(
@@ -330,7 +338,7 @@ def compraLocal(request):
                 total=0,
                 fecha_compra="2024-11-11",
                 tipo_compra=True,
-                cliente=cliente,
+                trabajador=cliente,
                 metodo_pago=metodo_pago,
                 comfimada=False
             )
