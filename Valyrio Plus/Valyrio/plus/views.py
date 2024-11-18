@@ -464,9 +464,10 @@ def logout_view(request):
 
 
 ######################################################
+
 def realizar_compra(request):
     if request.method == "POST":
-        detalles = DetalleCompra.objects.filter(compra__cliente=request.user.cliente, compra__comfimada=False)
+        detalles = DetalleCompra.objects.filter(compra__trabajador=request.user.trabajador, compra__comfimada=False)
         direccion = request.POST.get("direccion")
         departamento = request.POST.get("departamento")
         telefono = request.POST.get("telefono")
@@ -483,7 +484,7 @@ def realizar_compra(request):
                 producto.cantidad = producto.cantidad - int(cantidad)
                 producto.save()
 
-        compra = Compra.objects.filter(cliente=request.user.cliente, comfimada=False).first()
+        compra = Compra.objects.filter(trabajador=request.user.trabajador, comfimada=False).first()
 
         if request.user.is_staff:
             # Buscar el cliente con el correo proporcionado
@@ -501,9 +502,9 @@ def realizar_compra(request):
                 )
 
             if compra:
-                compra.total = calcular_total(request.user.cliente)  # Usamos cliente recién creado o encontrado
+                compra.total = calcular_total(request.user.trabajador)  # Usamos trabajador recién creado o encontrado
                 compra.comfimada = True
-                compra.cliente= cliente
+                compra.cliente = cliente
                 compra.trabajador = request.user.trabajador
                 compra.save()
 
@@ -528,7 +529,6 @@ def realizar_compra(request):
         if request.user.is_staff:
             return HttpResponseRedirect(reverse("prods"))
         return HttpResponseRedirect(reverse("index"))
-
 
 ######################################################
 def carrito(request):
@@ -568,12 +568,14 @@ def productos(request, id):
 
 ######################################################
 
-def calcular_total(cliente_id):
-    compra_no_confirmada = Compra.objects.filter(cliente_id=cliente_id, comfimada=False).first()
+def calcular_total(user):
+    if user.user.is_staff:
+        compra_no_confirmada = Compra.objects.filter(trabajador=user, comfimada=False).first()
+    else:
+        compra_no_confirmada = Compra.objects.filter(cliente=user.cliente, comfimada=False).first()
 
     if not compra_no_confirmada:
         return 0  
-
     detalles = DetalleCompra.objects.filter(compra=compra_no_confirmada)
     
     total = 0
