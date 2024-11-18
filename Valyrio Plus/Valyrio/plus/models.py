@@ -113,7 +113,9 @@ class DetalleCompra(models.Model):
     cantidad = models.IntegerField()
 
     def __str__(self):
-        return f"Detalle de Compra {self.id} - {self.cantidad} unidades de {self.producto.nombre}"
+        if self.producto:
+            return f"Detalle de Compra {self.id} - {self.cantidad} unidades de {self.producto.nombre}"
+        return f"Detalle de Compra {self.id} - Producto no especificado"
 
 
 class Envio(models.Model):

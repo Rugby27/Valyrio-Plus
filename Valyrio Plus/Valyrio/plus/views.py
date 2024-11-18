@@ -536,11 +536,10 @@ def carrito(request):
     try:
         cliente = Cliente.objects.get(user=request.user)
     except Cliente.DoesNotExist:
-        return HttpResponse("Cliente no encontrado", status=404)
+        cliente = Trabajador.objects.get(user=request.user)
 
+    compra_no_confirmada = Compra.objects.filter(trabajador=cliente, comfimada=False).first()
 
-    compra_no_confirmada = Compra.objects.filter(cliente=cliente, comfimada=False).first()
-    print(compra_no_confirmada)
     if compra_no_confirmada:
         detalles = DetalleCompra.objects.filter(compra=compra_no_confirmada)
     else:
