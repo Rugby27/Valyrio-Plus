@@ -464,34 +464,38 @@ def logout_view(request):
 
 
 ######################################################
-
 def realizar_compra(request):
     if request.method == "POST":
-        detalles = DetalleCompra.objects.filter(compra__trabajador=request.user.trabajador, compra__comfimada=False)
+        if request.user.is_staff:
+            detalles = DetalleCompra.objects.filter(compra__trabajador=request.user.trabajador, compra__comfimada=False)
+        else:
+            detalles = DetalleCompra.objects.filter(compra__cliente=request.user.cliente, compra__comfimada=False)
+        
         direccion = request.POST.get("direccion")
         departamento = request.POST.get("departamento")
         telefono = request.POST.get("telefono")
         tienda = request.POST.get("cliente")
-        Nombre = request.POST.get("name")  # Corregido: se usaba POT en lugar de POST
+        Nombre = request.POST.get("name")
 
         for detalle in detalles:
-            # Obtener el valor enviado en el input de cantidad de cada producto
             cantidad = request.POST.get(f"cantidad_{detalle.id}")
             if cantidad and cantidad.isdigit():
-                detalle.cantidad = int(cantidad)  # Actualizar la cantidad en la base de datos
+                detalle.cantidad = int(cantidad)
                 detalle.save()
                 producto = detalle.producto
                 producto.cantidad = producto.cantidad - int(cantidad)
                 producto.save()
 
-        compra = Compra.objects.filter(trabajador=request.user.trabajador, comfimada=False).first()
+        if request.user.is_staff:
+            compra = Compra.objects.filter(trabajador=request.user.trabajador, comfimada=False).first()
+        else:
+            compra = Compra.objects.filter(cliente=request.user.cliente, comfimada=False).first()
 
         if request.user.is_staff:
-            # Buscar el cliente con el correo proporcionado
             try:
                 cliente = Cliente.objects.get(correo=tienda)
             except Cliente.DoesNotExist:
-                # Si el cliente no existe, crear uno nuevo con valores predeterminados
+                # Si el cliente no existe, se crea uno nuevo con valores predeterminados
                 cliente = Cliente.objects.create(
                     nombre=Nombre,
                     apellido=" ",  # Valor por defecto
@@ -500,19 +504,18 @@ def realizar_compra(request):
                     correo=tienda,
                     contraseña="defaultpassword"  # Valor por defecto
                 )
-
+            
             if compra:
-                compra.total = calcular_total(request.user.trabajador)  # Usamos trabajador recién creado o encontrado
+                compra.total = calcular_total(request.user.trabajador)
                 compra.comfimada = True
                 compra.cliente = cliente
                 compra.trabajador = request.user.trabajador
                 compra.save()
 
         else:
-            # Si no es un usuario staff, usa el cliente asociado al usuario logueado
             cliente = request.user.cliente
             if compra:
-                compra.total = calcular_total(cliente)
+                compra.total = calcular_total(request.user.cliente)
                 compra.comfimada = True
                 compra.save()
 
@@ -526,6 +529,7 @@ def realizar_compra(request):
                 peso=0,
                 repartidor=None
             )
+        
         if request.user.is_staff:
             return HttpResponseRedirect(reverse("prods"))
         return HttpResponseRedirect(reverse("index"))
@@ -534,11 +538,18 @@ def realizar_compra(request):
 def carrito(request):
     cliente_id = request.user.id ### no se usa borrar despues
     try:
-        cliente = Cliente.objects.get(user=request.user)
+        if request.user.is_staff:
+            cliente = Cliente.objects.get(user=request.user)
+        else:
+            cliente = request.user.cliente 
+
     except Cliente.DoesNotExist:
         cliente = Trabajador.objects.get(user=request.user)
 
-    compra_no_confirmada = Compra.objects.filter(trabajador=cliente, comfimada=False).first()
+    if request.user.is_staff:
+        compra_no_confirmada = Compra.objects.filter(trabajador=cliente, comfimada=False).first()
+    else:
+        compra_no_confirmada = Compra.objects.filter(cliente=cliente, comfimada=False).first()
 
     if compra_no_confirmada:
         detalles = DetalleCompra.objects.filter(compra=compra_no_confirmada)
@@ -572,7 +583,7 @@ def calcular_total(user):
     if user.user.is_staff:
         compra_no_confirmada = Compra.objects.filter(trabajador=user, comfimada=False).first()
     else:
-        compra_no_confirmada = Compra.objects.filter(cliente=user.cliente, comfimada=False).first()
+        compra_no_confirmada = Compra.objects.filter(cliente=user, comfimada=False).first()
 
     if not compra_no_confirmada:
         return 0  
