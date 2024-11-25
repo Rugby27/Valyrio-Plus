@@ -12,6 +12,7 @@ urlpatterns = [
     path("agregarCarrito",views.agregarCarrito,name="agrecarrito"),
     path("realizarCompra",views.realizar_compra, name="Compra"),
     path("perfil",views.perfil,name="perfil"),
+    path("solicitudDevolucion",views.solicitudDevolucion,name="solicitudDevolucion"),
     
     #-----------------Admin-----------------------#
     path("loggin", views.login_traba, name="loggin"),
@@ -28,6 +29,14 @@ urlpatterns = [
     path('registro-regalias/', views.registro_regalias, name='registro_regalias'),
     path('inversion',views.inversion,name="inversion"),
     path('registro_inversion',views.registro_inversion,name="registro_inversion"),
+    path('compraEspecifica/<int:id>',views.compraEspecifica,name="compraEspecifica"),
+    path('cancelarCompra/<int:id>',views.cancelarCompra,name="cancelarCompra"),
+    path('comprasCanceladas',views.comprasCanceladas, name="comprasCanceladas"),
+    path('confirmar_inversion/', views.confirmar_inversion, name='confirmar_inversion'),
+    path('inversion/<int:id>/', views.inversion_especifica, name='inversionEspecifica'),
+    path('ganancias/', views.ver_ganancias, name='ver_ganancias'),
+    path('crear_producto/', views.crear_producto, name='crear_producto'),
+
 
     #-----------------ambos-----------------------#
     path("logout", views.logout_view, name="logout"),

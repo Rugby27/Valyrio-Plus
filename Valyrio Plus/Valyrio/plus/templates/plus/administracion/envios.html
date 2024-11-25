@@ -24,7 +24,7 @@
                     <th scope="row">{{ envio.id }}</th>
                     <td>{{ envio.compra.cliente.nombre }}</td>
                     <td>{{ envio.direccion }}</td>
-                    <td>{{ envio.tarifa_envio }}</td>
+                    <td>C$ {{ envio.compra.total|add:envio.tarifa_envio }}</td>
                     <td>{{ envio.repartidor.nombre }}</td>
                 </tr>
                 {% endfor %}
@@ -47,8 +47,8 @@
                 <tr>
                     <th scope="row">{{ envio.compra.cliente.nombre }}</th>
                     <td>{{ envio.direccion }}</td>
-                    <td>{{ envio.compra.total }}</td>
-                    <td>{{ envio.tarifa_envio }}</td>
+                    <td>C$ {{ envio.compra.total }}</td>
+                    <td>C$ {{ envio.tarifa_envio }}</td>
                     <td>
                         <form method="POST" action="{% url 'asignar_repartidor' envio.id %}">
                             {% csrf_token %}

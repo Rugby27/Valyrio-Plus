@@ -52,7 +52,7 @@
                 <a class="nav-link active" aria-current="page" href="{% url 'register' %}" style="color: white;">Registrarse</a>
                 {% endif %}
             </div>
-
+            {% if user.is_authenticated %}
             <!-- Perfil e icono SVG al lado derecho -->
             <div class="d-flex align-items-center ms-auto">
                 <!-- Primer ícono SVG -->
@@ -68,6 +68,7 @@
                 </svg>
             </a>
             </div>
+            {% endif %}
             
 
             {% block searchbar %}{% endblock %}

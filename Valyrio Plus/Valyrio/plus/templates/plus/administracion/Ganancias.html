@@ -1,0 +1,30 @@
+{% extends "plus/administracion/layout.html" %}
+
+{% block body %}
+
+<h2 style="color: aliceblue;">Ganancias Mensuales</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Mes</th>
+            <th>Año</th>
+            <th>Total Inversiones</th>
+            <th>Total Ventas</th>
+            <th>Ganancia</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for g in ganancias %}
+        <tr>
+            <td>{{ g.mes }}</td>
+            <td>{{ g.anio }}</td>
+            <td>C$ {{ g.inversion }}</td>
+            <td>C$ {{ g.compra }}</td>
+            <td>C$ {{ g.ganancia }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "plus/cliente/layout.html" %}
+
+{% block body %}
+    <h2>Solicitud de Devolución</h2>
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="compra">Seleccione una compra:</label>
+            <select class="form-control" id="compra" name="compra" required>
+                {% for compra in compras %}
+                    <option value="{{ compra.id }}">{{ compra.id }} - {{ compra.total }} C$</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="descripcion">Descripción de la devolución:</label>
+            <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="imagen">Imagen de la devolución (opcional):</label>
+            <input type="url" class="form-control" id="imagen" name="imagen" placeholder="URL de la imagen">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Solicitar Devolución</button>
+    </form>
+{% endblock %}

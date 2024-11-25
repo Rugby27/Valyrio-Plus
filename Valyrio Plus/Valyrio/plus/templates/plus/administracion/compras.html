@@ -1,6 +1,9 @@
 {% extends "plus/administracion/layout.html" %}
+{% load custom_filters %}
+
 
 {% block body %}
+<a href="{% url 'comprasCanceladas' %}" class="btn btn-danger">Cancelaciones</a>
 
  <div style="display: flex; gap: 10px; flex-grow: 1;">
         <table style="flex: 1;" class="table">
@@ -14,16 +17,23 @@
             </thead>
             <tbody>
                 {% for compra in compras %}
-                <tr>
-                    <th scope="row">{{ compra.id }}</th>
-                    <td>{{ compra.cliente.nombre }}</td>
-                    <td>{{ compra.trabajador.nombre }}</td>
-                    {% if compra.tipo_compra == False %}
-                        <td>Online</td>
-                    {% else %}
-                        <td>Tienda</td>
-                    {% endif %}
-                </tr>
+                    <tr>
+                        <th scope="row">
+                            <a href="{% url 'compraEspecifica' id=compra.id %}">{{ compra.id }}</a>
+                        </th>
+                        <td>{{ compra.cliente.nombre }}</td>
+                        <td>{{ compra.trabajador.nombre }}</td>
+                        {% if compra.tipo_compra == False %}
+                            <td> 
+                                Online 
+                                <a href="{% url 'cancelarCompra' id=compra.id %}" class="btn btn-danger">Cancelar</a>
+                            </td>
+                            
+                        {% else %}
+                            <td>Tienda</td>
+                        {% endif %}
+                    </tr>  
+                
                 {% endfor %}
             </tbody>
         </table>

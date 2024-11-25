@@ -1,0 +1,37 @@
+{% extends "plus/administracion/layout.html" %}
+{% load custom_filters %}
+
+{% block body %}
+
+<div style="display: flex; gap: 10px; flex-grow: 1;">
+    <table style="flex: 1;" class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID de la compra</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Pérdida</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for compra in canceladas %}
+                <tr>
+                    <th scope="row">
+                        <a href="{% url 'compraEspecifica' id=compra.id %}">{{ compra.id }}</a>
+                    </th>
+                    <td>{{ compra.cliente.nombre }}</td>
+                    <td>{{ compra.fecha_compra }}</td>
+                    <td>
+                        {% if envios_por_compra|get_item:compra.id %}
+                            {{ envios_por_compra|get_item:compra.id|floatformat:2 }}
+                        {% else %}
+                            No disponible
+                        {% endif %}
+                    </td>
+                </tr>  
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

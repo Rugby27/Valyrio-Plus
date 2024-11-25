@@ -23,6 +23,7 @@
     </br>
         <p style="color: white;">{{ producto.descripcion|linebreaksbr }}</p>
     </br>
+    {% if user.is_authenticated %}
         <form action="{% url 'agrecarrito' %}" method="POST">
             {% csrf_token %}
             <input type="hidden" name="prod" value="{{ producto.id }}">
@@ -35,7 +36,7 @@
                 </svg>
             </button>
         </form>
-    
+    {% endif %}
         
     </div>
 </div>

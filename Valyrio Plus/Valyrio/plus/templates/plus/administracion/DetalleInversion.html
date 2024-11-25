@@ -1,0 +1,29 @@
+{% extends "plus/administracion/layout.html" %}
+
+{% block body %}
+<style>
+    h6{
+        color: azure;
+    }
+</style>
+<h6><strong>Fecha:</strong> {{ inversion.fecha_inversion }}</h6>
+<h6><strong>Total:</strong> {{ inversion.total_inversion }}</h6>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for detalle in detalles %}
+        <tr>
+            <td>{{ detalle.producto.nombre }}</td>
+            <td>{{ detalle.cantidad }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

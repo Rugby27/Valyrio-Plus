@@ -4,38 +4,38 @@
     <div>
         <form action="{% url 'registro_inversion' %}">
             {% csrf_token %}
-            <button type="submit">Registar Nueva Coleccion</button>
+            <button type="submit">Registrar Nueva Colección</button>
         </form>
     </div>
 
-
- <div style="display: flex; gap: 10px; flex-grow: 1;">
+    <div style="display: flex; gap: 10px; flex-grow: 1;">
         <table style="flex: 1;" class="table">
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">Id</th>
                     <th scope="col">Fecha</th>
-                    <th scope="col">Producto</th>
-                    <th scope="col">Cantidad</th>
                     <th scope="col">Total</th>
                 </tr>
             </thead>
             <tbody>
                 {% for inversion in inversiones %}
                 <tr>
-                    <th scope="row">{{ inversion.id }}</th>
+                    <!-- Enlace al detalle de la inversión -->
+                    <th scope="row">
+                        <a href="{% url 'inversionEspecifica' id=inversion.id %}">{{ inversion.id }}</a>
+                    </th>
                     <td>{{ inversion.fecha_inversion }}</td>
 
-                    {% for detalle in inversion.detalles %}
-                    <td>{{ detalle.producto.nombre }}</td>
-                    <td>{{ detalle.cantidad }}</td>
-                    {% endfor %}
-
-                    <td>{{ inversion.total_inversion }}</td>
+                    <td>C$ {{ inversion.total_inversion }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+    </div>
 
-
+    <div style="margin-top: 20px; text-align: right;">
+        <form action="{% url 'ver_ganancias' %}">
+            <button class="btn btn-success">Ver Ganancias</button>
+        </form>
+    </div>
 {% endblock %}

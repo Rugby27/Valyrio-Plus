@@ -4,7 +4,10 @@ from django.contrib.auth.decorators import login_required ,user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.contrib import messages
 from django.db.models import Q, Count
+from django.db.models.functions import ExtractMonth, ExtractYear
+from django.db.models import Sum
 from .models import *
 
 #para verificar su un user es staff(los trabajadores son staff)
@@ -116,6 +119,7 @@ def register(request):
         return render(request, "plus/cliente/register.html")
 
 ######################################################
+@login_required
 def perfil(request):
     user = Cliente.objects.get(user=request.user)
     compras = Compra.objects.filter(cliente=user)
@@ -178,6 +182,43 @@ def agregarCarrito(request):
 
     return HttpResponseRedirect(reverse("index"))  
 
+
+def solicitudDevolucion(request):
+    if request.method == "POST":
+        # Obtener los datos del formulario
+        descripcion = request.POST.get("descripcion")
+        imagen = request.POST.get("imagen")
+        compra_id = request.POST.get("compra")
+        
+        if not descripcion or not compra_id:
+            messages.error(request, "Por favor, complete todos los campos requeridos.")
+            return redirect("solicitud_devolucion")  # Redirigir para volver a intentar
+        
+        # Verificar si la compra existe
+        try:
+            compra = Compra.objects.get(id=compra_id, cliente=request.user.cliente)
+        except Compra.DoesNotExist:
+            messages.error(request, "La compra no existe o no es válida.")
+            return redirect("solicitud_devolucion")
+        
+        # Crear la devolución
+        devolucion = Devolucion(
+            descripcion=descripcion,
+            imagen=imagen or 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/768px-Imagen_no_disponible.svg.png',
+            compra=compra,
+            cliente=request.user.cliente,
+        )
+        devolucion.save()
+
+        messages.success(request, "Devolución solicitada exitosamente.")
+        return redirect("perfil")  # Redirigir a una página de confirmación o listado
+
+    compras = Compra.objects.filter(cliente=request.user.cliente)
+
+    return render(request, "plus/cliente/Devolu.html", {
+        "compras": compras
+    })
+
 #---------------------------------Productos------------------------------#
 ######################################################
 def index(request):
@@ -196,11 +237,8 @@ def login_traba(request):
         username = request.POST["username"]
         password = request.POST["password"]
 
-        print(username)
-        print(password)
         user = authenticate(request, username=username, password=password)
         #user = User.objects.get(username="Conde18")
-        print(user)
         # Check if authentication successful
         if user is not None:
             login(request, user)
@@ -287,6 +325,7 @@ def envios(request):
         'repartidores': repartidores,
     }
     return render(request, 'plus/administracion/envios.html', context)
+
 @staff_required
 def asignar_repartidor(request, envio_id):
     if request.method == 'POST':
@@ -308,13 +347,7 @@ def compraLocal(request):
         
         user = User.objects.get(username="Conde18")
 
-# Verifica si tiene un trabajador asociado
-        print(hasattr(user, 'trabajador'))  # Esto debería devolver True
-        if hasattr(user, 'trabajador'):
-            print(user.trabajador)
-
         cliente = request.user.trabajador
-        print(cliente)
         if not cliente:
             return HttpResponse("El usuario no tiene un cliente asociado.")
         
@@ -354,10 +387,42 @@ def compraLocal(request):
 
 @staff_required 
 def compras(request):
-    registro = Compra.objects.all()
+    registro = Compra.objects.filter(Cancelada= False)
     return render(request, "plus/administracion/compras.html", {
-        "compras": registro
+        "compras": registro,
         })
+
+def comprasCanceladas(request):
+    canceladas = Compra.objects.filter(Cancelada= True)
+    envios = Envio.objects.filter(compra__in=canceladas)
+    envios_por_compra = {envio.compra.id: envio.tarifa_envio for envio in envios}
+
+    # Renderiza la plantilla con los datos
+    return render(request, 'plus/administracion/ComprasConceladas.html', {
+        'canceladas': canceladas,
+        'envios_por_compra': envios_por_compra
+    })
+
+
+@staff_required 
+def compraEspecifica(request, id):
+    compra = Compra.objects.get(id=id)
+    detalles = DetalleCompra.objects.filter(compra=compra)
+
+    # Verificar si existe un envio asociado a la compra
+    envio = Envio.objects.filter(compra=compra).first()
+
+    # Pasar las variables al contexto
+    context = {
+        'compra': compra,
+        'detalles': detalles,
+    }
+
+    # Solo agregar 'envio' si existe un envío
+    if envio:
+        context['envio'] = envio
+
+    return render(request, 'plus/administracion/ComEspe.html', context)
 
 @staff_required
 def devolucion(request):
@@ -369,9 +434,9 @@ def devolucion(request):
     })
 
 @staff_required
-def aceptarDevolucion(request, devolucion_id):
+def aceptarDevolucion(request, id):
     if request.method == 'POST':
-        dev = get_object_or_404(Devolucion, pk=devolucion_id)
+        dev = get_object_or_404(Devolucion, pk=id)
         dev.aceptada = True
         dev.save() 
         return redirect('devolucion')
@@ -389,17 +454,14 @@ def registro_regalias(request):
     if request.method == 'POST':
         cantidad = request.POST['cantidad']
         monto_total = request.POST['monto_total']
-        fecha_regalia = request.POST['fecha_regalia']
         beneficiado = request.POST['beneficiado']
         justificacion = request.POST['justificacion']
-        producto_id = request.POST['producto']
-        producto = Producto.objects.get(pk=producto_id)
+        producto = Producto.objects.get(pk=request.POST['producto'])
 
         # Crear la nueva instancia de Regalias
         Regalias.objects.create(
             cantidad=cantidad,
             monto_total=monto_total,
-            fecha_regalia=fecha_regalia,
             beneficiado=beneficiado,
             justificacion=justificacion,
             producto=producto
@@ -411,7 +473,7 @@ def registro_regalias(request):
 
 @staff_required
 def inversion(request):
-    inversiones = InversionColeccion.objects.all()
+    inversiones = InversionColeccion.objects.filter(confirmada = True)
     for inversion in inversiones:
         # Obtener los detalles asociados a esta inversión
         inversion.detalles = DetalleInversion.objects.filter(inversion_coleccion=inversion)
@@ -422,40 +484,147 @@ def inversion(request):
 @staff_required
 def registro_inversion(request):
     productos = Producto.objects.all()
+    inversion = InversionColeccion.objects.filter(confirmada = False)
 
     if request.method == 'POST':
-        # Primero se obtiene y guarda la inversión
-        total_inversion = request.POST['total_inversion']
-        fecha_inversion = request.POST['fecha_inversion']
-        
-        # Crear la inversión
-        inversion = InversionColeccion.objects.create(
-            total_inversion=total_inversion,
-            fecha_inversion=fecha_inversion
-        )
+        prod = request.POST.get("prod")
+        cant = request.POST.get("cantidad")
 
-        # Luego se obtiene y guarda los detalles de inversión
-        productos_seleccionados = request.POST.getlist('producto')  # Lista de IDs de productos
-        cantidades = request.POST.getlist('cantidad')  # Lista de cantidades correspondientes a los productos
+        produc = get_object_or_404(Producto, id=prod)
 
-        for producto_id, cantidad in zip(productos_seleccionados, cantidades):
-            producto = Producto.objects.get(id=producto_id)
-            
-            # Actualizar la cantidad del producto
-            producto.cantidad += int(cantidad)  # Sumar la cantidad invertida
-            producto.save()  # Guardar el producto con la nueva cantidad
+        inver = InversionColeccion.objects.filter(confirmada = False).first()
 
-            # Crear el detalle de inversión
+        if inver:
             DetalleInversion.objects.create(
-                inversion_coleccion=inversion,
-                producto=producto,
-                cantidad=cantidad
+                inversion_coleccion = inver,
+                producto = produc,
+                cantidad = cant
             )
+        else:
+            newInver = InversionColeccion.objects.create(
+                total_inversion = 0,
+                confirmada = False
+            )
+            DetalleInversion.objects.create(
+                inversion_coleccion = newInver, 
+                producto = produc,
+                cantidad = cant
+            )
+        return redirect('registro_inversion') 
 
-        return redirect('inversion') 
+    return render(request, 'plus/administracion/Newinversion.html', 
+                  {'productos': productos, 
+                   "Inver": inversion
+                   })
 
-    return render(request, 'plus/administracion/Newinversion.html', {'productos': productos})
+@staff_required
+def confirmar_inversion(request):
+    if request.method == "POST":
+        # Obtener la inversión no confirmada
+        inversion = InversionColeccion.objects.filter(confirmada=False).first()
 
+        if not inversion:
+            messages.error(request, "No hay inversiones pendientes para confirmar.")
+            return redirect("registro_inversion")
+
+        # Calcular el monto total de la inversión
+        total_inversion = request.POST.get("Total")
+        inversion.total_inversion = total_inversion
+        inversion.confirmada = True
+        inversion.save()
+
+        # Actualizar las existencias de los productos
+        for detalle in inversion.detalleinversion_set.all():
+            producto = detalle.producto
+            producto.cantidad += detalle.cantidad
+            producto.save()
+
+        messages.success(request, f"Inversión confirmada exitosamente con un total de {total_inversion} C$")
+        return redirect("registro_inversion")
+    
+@staff_required    
+def inversion_especifica(request, id):
+    # Obtén la inversión específica
+    inversion = get_object_or_404(InversionColeccion, id=id)
+    detalles = inversion.detalleinversion_set.all()
+
+    return render(request, 'plus/administracion/DetalleInversion.html', {
+        'inversion': inversion,
+        'detalles': detalles,
+    })
+
+@staff_required 
+def cancelarCompra(request, id):
+    com = Compra.objects.get(id=id) 
+    com.Cancelada = True 
+    com.total = 0
+    com.save()
+
+    return redirect(compras)
+
+@staff_required
+
+def ver_ganancias(request):
+    # Calcular las ganancias para cada mes
+    ganancias = []
+
+    # Obtener las inversiones agrupadas por mes y año
+    inversiones_mensuales = InversionColeccion.objects.annotate(
+        mes=ExtractMonth('fecha_inversion'),
+        anio=ExtractYear('fecha_inversion')
+    ).values('mes', 'anio').annotate(total_inversion=Sum('total_inversion'))
+
+    # Obtener las compras confirmadas agrupadas por mes y año
+    compras_mensuales = Compra.objects.filter(comfimada=True).annotate(
+        mes=ExtractMonth('fecha_compra'),
+        anio=ExtractYear('fecha_compra')
+    ).values('mes', 'anio').annotate(total_compra=Sum('total'))
+
+    # Convertir los datos de las compras a un formato más manejable
+    compras_dict = {(compra['mes'], compra['anio']): compra['total_compra'] for compra in compras_mensuales}
+
+    # Comparar inversiones y compras para calcular las ganancias
+    for inv in inversiones_mensuales:
+        mes = inv['mes']
+        anio = inv['anio']
+        total_inversion = inv['total_inversion']
+        total_compra = compras_dict.get((mes, anio), 0)
+        ganancia = total_compra - total_inversion
+
+        ganancias.append({
+            'mes': mes,
+            'anio': anio,
+            'inversion': total_inversion,
+            'compra': total_compra,
+            'ganancia': ganancia,
+        })
+
+    return render(request, 'plus/administracion/Ganancias.html', {
+        'ganancias': ganancias,
+    })
+
+@staff_required
+def crear_producto(request):
+    if request.method == "POST":
+        # Obtener los datos del formulario manualmente
+        nombre = request.POST.get('nombre')
+        descripcion = request.POST.get('descripcion', 'Sin descripción')
+        precio = request.POST.get('precio')
+        peso = request.POST.get('peso')
+        imagen = request.POST.get('imagen', 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/768px-Imagen_no_disponible.svg.png')
+        
+        # Crear un nuevo producto
+        producto = Producto(
+            nombre=nombre,
+            descripcion=descripcion,
+            precio=precio,
+            cantidad=0,
+            peso=peso,
+            imagen=imagen
+        )
+        producto.save()
+        return redirect('registro_inversion')  # Redirigir a la página que desees, por ejemplo, la lista de productos
+    return render(request, 'plus/administracion/NewProd.html')
 #----------------------------------------------------------Ambos--------------------------------------------------------------#
 ######################################################
 def logout_view(request):
@@ -464,75 +633,111 @@ def logout_view(request):
 
 
 ######################################################
+
 def realizar_compra(request):
     if request.method == "POST":
+        # Filtrar los detalles de la compra
         if request.user.is_staff:
             detalles = DetalleCompra.objects.filter(compra__trabajador=request.user.trabajador, compra__comfimada=False)
         else:
             detalles = DetalleCompra.objects.filter(compra__cliente=request.user.cliente, compra__comfimada=False)
-        
-        direccion = request.POST.get("direccion")
-        departamento = request.POST.get("departamento")
-        telefono = request.POST.get("telefono")
-        tienda = request.POST.get("cliente")
-        Nombre = request.POST.get("name")
 
+        # Calcular peso total y tarifa de envío solo para clientes
+        if not request.user.is_staff:
+            # Calcular peso total
+            peso_total = calcular_peso_total(detalles)
+
+            # Obtener destino del formulario
+            destino = request.POST.get("destino")  # 'Managua', 'Rio San Juan', etc.
+
+            # Calcular tarifa de envío
+            tarifa_envio = calcular_tarifa_envio(peso_total, destino)
+
+            if tarifa_envio is None:
+                messages.error(request, "El peso de los productos excede el límite permitido.")
+                return redirect("carrito")  # Redirige si no se puede calcular la tarifa
+        else:
+            peso_total = 0  # No se calcula para el staff
+            tarifa_envio = 0  # No se calcula para el staff
+
+        # Procesar detalles y actualizar cantidades
         for detalle in detalles:
             cantidad = request.POST.get(f"cantidad_{detalle.id}")
             if cantidad and cantidad.isdigit():
-                detalle.cantidad = int(cantidad)
+                cantidad = int(cantidad)
+                if cantidad > detalle.producto.cantidad or cantidad <= 0:
+                    messages.error(
+                        request,
+                        f"El producto '{detalle.producto.nombre}' solo tiene {detalle.producto.cantidad} existencias."
+                    )
+                    return redirect("carrito")  # Redirige al carrito si hay un error
+                detalle.cantidad = cantidad
                 detalle.save()
                 producto = detalle.producto
-                producto.cantidad = producto.cantidad - int(cantidad)
+                producto.cantidad -= cantidad
                 producto.save()
 
+        # Obtener o crear la compra
         if request.user.is_staff:
             compra = Compra.objects.filter(trabajador=request.user.trabajador, comfimada=False).first()
         else:
             compra = Compra.objects.filter(cliente=request.user.cliente, comfimada=False).first()
 
+        # Verificar o crear cliente
         if request.user.is_staff:
-            try:
-                cliente = Cliente.objects.get(correo=tienda)
-            except Cliente.DoesNotExist:
-                # Si el cliente no existe, se crea uno nuevo con valores predeterminados
-                cliente = Cliente.objects.create(
-                    nombre=Nombre,
-                    apellido=" ",  # Valor por defecto
-                    telefono="00000000",  # Valor por defecto
-                    cedula="000000000",  # Valor por defecto
-                    correo=tienda,
-                    contraseña="defaultpassword"  # Valor por defecto
-                )
-            
-            if compra:
-                compra.total = calcular_total(request.user.trabajador)
-                compra.comfimada = True
+            tipo_usuario = request.POST.get("tipo_usuario")
+            print(tipo_usuario)
+            if tipo_usuario == "usuario":  # Cliente existente
+                correo_cliente = request.POST.get("cliente")
+                cliente = Cliente.objects.filter(correo=correo_cliente).first()
                 compra.cliente = cliente
-                compra.trabajador = request.user.trabajador
+                compra.save()
+                if not cliente:
+                    messages.error(request, "El correo proporcionado no está registrado.")
+                    return redirect("carrito")  # Redirige si no se encuentra el cliente
+            elif tipo_usuario == "nuevo":  # Cliente sin cuenta
+                nombre = request.POST.get("name")
+                correo = request.POST.get("correo","default@gmail.com")
+                contraseña = request.POST.get("contraseña", "1234")
+                
+
+                # Crear un nuevo cliente y asignar el cliente a la compra
+                usuario = User.objects.create_user(username=correo, email=correo, password=contraseña)
+                cliente = Cliente.objects.create(
+                    user=usuario,
+                    nombre=nombre,
+                    apellido="",
+                    telefono=000000,
+                    cedula=000000,
+                    correo=correo,
+                    contraseña=contraseña
+                )
+
+                # Asociar cliente a la compra
+                compra.cliente = cliente
                 compra.save()
 
-        else:
-            cliente = request.user.cliente
-            if compra:
-                compra.total = calcular_total(request.user.cliente)
-                compra.comfimada = True
-                compra.save()
+        # Confirmar compra
+        if compra:
+            compra.total = sum(detalle.producto.precio * detalle.cantidad for detalle in detalles)  # Calcula el total
+            compra.comfimada = True
+            compra.save()
 
-        # Crear el envío solo si no es staff
+        # Crear envío solo para clientes
         if not request.user.is_staff:
-            envionew = Envio.objects.create(
-                direccion=direccion,
-                telefono=telefono,
-                tarifa_envio=0,
+            Envio.objects.create(
+                direccion=request.POST.get("direccion"),
+                telefono=request.POST.get("telefono"),
+                tarifa_envio=tarifa_envio,
+                peso=peso_total,
                 compra=compra,
-                peso=0,
-                repartidor=None
             )
-        
+
+        messages.success(request, f"Compra realizada con éxito. Tarifa de envío: {tarifa_envio} C$")
         if request.user.is_staff:
-            return HttpResponseRedirect(reverse("prods"))
+            return redirect('prods')
         return HttpResponseRedirect(reverse("index"))
+
 
 ######################################################
 def carrito(request):
@@ -594,3 +799,28 @@ def calcular_total(user):
         total += detalle.producto.precio * detalle.cantidad
 
     return total
+
+######################################################
+def calcular_peso_total(detalles):
+    """Calcula el peso total de los productos en el carrito."""
+    peso_total = 0
+    for detalle in detalles:
+        peso_total += detalle.producto.peso * detalle.cantidad
+    return peso_total
+
+######################################################
+def calcular_tarifa_envio(peso_total, destino):
+    """Determina la tarifa de envío según el peso total y el destino."""
+    tarifas = {
+        "Managua": [(11, 100), (22, 180), (33, 220)],
+        "Rio San Juan": [(11, 400), (22, 450), (33, 510)],
+        "Bluefields": [(11, 210), (22, 560), (33, 925)],
+        "Puerto Cabezas": [(11, 210), (22, 560), (33, 925)],
+        "Resto departamentos": [(11, 130), (22, 220), (33, 275)],
+    }
+
+    for limite_peso, tarifa in tarifas[destino]:
+        if peso_total <= limite_peso:
+            return tarifa
+
+    return None

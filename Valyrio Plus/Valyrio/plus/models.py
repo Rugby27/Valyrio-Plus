@@ -59,7 +59,8 @@ class Repartidor(models.Model):
 
 class InversionColeccion(models.Model):
     total_inversion = models.FloatField()
-    fecha_inversion = models.DateField()
+    fecha_inversion = models.DateField(auto_now_add=True)
+    confirmada = models.BooleanField(default=0)
 
     def __str__(self):
         return f"Inversión {self.id} con total de {self.total_inversion}"
@@ -84,7 +85,7 @@ class DetalleInversion(models.Model):
 class Regalias(models.Model):
     cantidad = models.IntegerField()
     monto_total = models.FloatField()
-    fecha_regalia = models.DateField()
+    fecha_regalia = models.DateField(auto_now_add=True)
     beneficiado = models.CharField(max_length=50)
     justificacion = models.CharField(max_length=50)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
@@ -101,10 +102,11 @@ class Compra(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, null=True, blank=True)
     trabajador = models.ForeignKey(Trabajador, on_delete=models.SET_NULL, null=True, blank=True)
     metodo_pago = models.ForeignKey(MetodoPago, on_delete=models.CASCADE)
-    comfimada = models.BooleanField(default=0)
+    comfimada = models.BooleanField(default=0) #Si ya se pago
+    Cancelada = models.BooleanField(default=0) # si el cliente rechaso el envio   
 
     def __str__(self):
-        return f"Compra {self.id} de {self.total} por {self.cliente.nombre}"
+        return f"Compra {self.id} de {self.total} por "
 
 
 class DetalleCompra(models.Model):
@@ -136,7 +138,7 @@ class Devolucion(models.Model):
         verbose_name='Imagen de la devolución',
         default='https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/768px-Imagen_no_disponible.svg.png'
     )
-    fecha_devolucion = models.DateField()
+    fecha_devolucion = models.DateField(auto_now_add=True)
     compra = models.ForeignKey(Compra, on_delete=models.CASCADE)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     aceptada = models.BooleanField(default=0)

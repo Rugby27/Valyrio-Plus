@@ -47,7 +47,7 @@
                         <div class="card-body">
                             <h6 class="card-title">Producto: {{ detalle.producto.nombre }}</h6>
                             <p>{{ detalle.producto.descripcion }}</p>
-                            <h6>Precio: {{ detalle.producto.precio }}</h6>
+                            <h6>Precio:C$ {{ detalle.producto.precio }}</h6>
                             <!-- Input para la cantidad, con un name único para cada producto -->
                             <div class="input-group quantity-input">
                                 <button type="button" class="btn btn-outline-secondary" onclick="decrement('{{ detalle.id }}')">-</button>
@@ -65,13 +65,26 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Información de envío</h5>
+                    <h5 class="card-title">Información de la compra</h5>
+
+                    <!-- Select para elegir entre usuario existente o cliente sin cuenta -->
                     <div class="mb-3">
-                        <label for="direccion" class="form-label">Correo</label>
+                        <label for="tipo" class="form-label">Tipo de cliente</label>
+                        <select name="tipo_usuario" id="tipo_usuario" class="form-control" onchange="toggleFields()">
+                            <option value="usuario">Usuario existente</option>
+                            <option value="nuevo">Cliente sin cuenta</option>
+                        </select>
+                    </div>
+
+                    <!-- Campo para Correo (se muestra solo si elige 'Usuario existente') -->
+                    <div id="correo_field" class="mb-3">
+                        <label for="cliente" class="form-label">Correo</label>
                         <input type="text" name="cliente" id="cliente" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="direccion" class="form-label">Nombre</label>
+
+                    <!-- Campo para Nombre (se muestra solo si elige 'Cliente sin cuenta') -->
+                    <div id="nombre_field" class="mb-3" style="display: none;">
+                        <label for="name" class="form-label">Nombre</label>
                         <input type="text" name="name" id="name" class="form-control" required>
                     </div>
 
@@ -87,15 +100,41 @@
 {% endif %}
 
 <script>
-    function increment(id) {
-    const input = document.getElementById(`cantidad_${id}`);
-    input.stepUp(); // Incrementa el valor en 1
-}
+    // Función que muestra u oculta los campos según la selección
+    function toggleFields() {
+        const tipoUsuario = document.getElementById('tipo_usuario').value;
+        const correoField = document.getElementById('correo_field');
+        const nombreField = document.getElementById('nombre_field');
+        const correoInput = document.getElementById('cliente');
+        const nombreInput = document.getElementById('name');
+        
+        if (tipoUsuario === 'usuario') {
+            correoField.style.display = 'block';
+            nombreField.style.display = 'none';
+            correoInput.required = true;  // Requerir el campo de correo
+            nombreInput.required = false; // No requerir el campo de nombre
+        } else {
+            correoField.style.display = 'none';
+            nombreField.style.display = 'block';
+            correoInput.required = false; // No requerir el campo de correo
+            nombreInput.required = true;  // Requerir el campo de nombre
+        }
+    }
 
-function decrement(id) {
-    const input = document.getElementById(`cantidad_${id}`);
-    if (input.value > 1) input.stepDown(); // Decrementa el valor en 1, sin permitir valores menores a 1
-}
+    // Inicializar estado de los campos
+    window.onload = function() {
+        toggleFields();
+    }
+
+    function increment(id) {
+        const input = document.getElementById(`cantidad_${id}`);
+        input.stepUp(); // Incrementa el valor en 1
+    }
+
+    function decrement(id) {
+        const input = document.getElementById(`cantidad_${id}`);
+        if (input.value > 1) input.stepDown(); // Decrementa el valor en 1, sin permitir valores menores a 1
+    }
 
 </script>
 {% endblock %}

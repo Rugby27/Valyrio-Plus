@@ -1,0 +1,51 @@
+{% extends "plus/administracion/layout.html" %}
+{% load custom_filters %}
+
+{% block body %}
+<div style="display: flex; gap: 10px; flex-grow: 1;">
+     <table style="flex: 1;" class="table">
+         <thead class="thead-dark">
+             <tr>
+                 <th scope="col">Producto</th>
+                 <th scope="col">Nombre</th>
+                 <th scope="col">Cantidad</th>
+                 <th scope="col">Precio</th>
+                 <th scope="col">Total Por producto </th>
+             </tr>
+         </thead>
+         <tbody>
+             {% for detalle in detalles %}
+             <tr>
+                 <th scope="row">{{ forloop.counter }}</th>
+                 <td>{{ detalle.producto.nombre }}</td>
+                 <td>{{ detalle.cantidad }}</td>
+                 <td>C$ {{ detalle.producto.precio|floatformat:2 }}</td>
+                 <td>C$ {{ detalle.cantidad|multiply:detalle.producto.precio }}</td>
+             </tr>
+             {% endfor %}
+             {% if envio %}
+             <tr>
+                 <th>Envio</th>
+                 <td>---</td>
+                 <td>---</td>
+                 <td>---</td>
+                 <td>
+                     C$ {{ envio.tarifa_envio }}
+                 </td>
+             </tr>
+             {% endif %}
+             <tr>
+                 <Th>Total</Th>
+                 <TD>---</TD>
+                 <TD>---</TD>
+                 <TD>---</TD>
+                 {% if envio %}
+                 <TD>C$ {{ compra.total|add:envio.tarifa_envio|default:compra.total|floatformat:2 }}</TD>
+                 {% else %}
+                 <TD>C$ {{ compra.total|floatformat:2 }}</TD>
+                 {% endif %}
+             </tr>
+         </tbody>
+     </table>
+</div>
+{% endblock %}

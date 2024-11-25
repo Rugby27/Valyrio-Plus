@@ -31,7 +31,27 @@
     border-right: none;
 }
 
+.custom-list {
+        list-style-type: none; /* Quita los puntos de la lista */
+        color: white; /* Cambia el color del texto a blanco */
+        padding: 0; /* Elimina el padding predeterminado */
+        margin: 0; /* Elimina el margen predeterminado */
+    }
+
+    .custom-list li {
+        margin-bottom: 5px; /* Opcional: espacio entre los elementos */
+    }
+
+
 </style>
+{% if messages %}
+    <ul class="custom-list">
+        {% for message in messages %}
+            <li class="{{ message.tags }}" Color >{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 <form action="{% url 'Compra' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="row">
@@ -71,8 +91,14 @@
                         <input type="text" name="direccion" id="direccion" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label for="departamento" class="form-label">Departamento</label>
-                        <input type="text" name="departamento" id="departamento" class="form-control" required>
+                        <label for="departamento" class="form-label">Departamento</label><br>
+                        <select name="destino" id="destino" required>
+                            <option value="Managua">Managua</option>
+                            <option value="Rio San Juan">Rio San Juan</option>
+                            <option value="Bluefields">Bluefields</option>
+                            <option value="Puerto Cabezas">Puerto Cabezas</option>
+                            <option value="Resto departamentos">Resto departamentos</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="numero" class="form-label">Número</label>
