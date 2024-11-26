@@ -2,42 +2,46 @@
 
 {% block body %}
 
-</br>
-<br>
-</br>
-</br>
+<div class="container my-5">
+    <div class="row align-items-start">
+        <!-- Contenedor de la imagen -->
+        <div class="col-md-6 text-center mb-4">
+            <img src="{{ producto.imagen }}" alt="{{ producto.nombre }}" class="img-fluid rounded shadow w-100" style="max-height: 400px; object-fit: cover;">
+        </div>
 
-<div style="display: flex; align-items: flex-start; margin-left: 40px;">
-    <!-- Contenedor de la imagen con margen izquierdo -->
-    <div style="margin-right: 60px;">
-        <img src="{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-width: 500px;">
+        <!-- Contenedor del texto -->
+        <div class="col-md-6">
+            <h1 class="text-white">{{ producto.nombre }}</h1>
+        </br>
+            <h3 class="text-success">{{ producto.precio }} C$</h3>
+            <p class="text-light"><strong>Existencias Disponibles:</strong> {{ producto.cantidad }}</p>
+        </br>
+            <form action="{% url 'compraLocal' %}" method="POST" class="mt-4">
+                {% csrf_token %}
+                <input type="hidden" name="prod" value="{{ producto.id }}">
+                <input type="hidden" name="cliente_id" value="{{ request.user.id }}">
+                <button type="submit" class="btn btn-success btn-lg w-100">
+                    <i class="bi bi-cart-plus me-2"></i>Añadir al carrito
+                </button>
+            </form>
+        </div>
     </div>
 
-    <!-- Contenedor del texto (nombre y descripción) -->
-    <div>
-        <h3 style="color: white;">Nombre: {{ producto.nombre }}</h3>
-    </br>
-        <h4 style="color: white;">Costo: {{producto.precio}} C$</h4>
-    <br>
-        <h4 style="color: white;">Stock: {{ producto.cantidad }}</h4>
-    </br>
-    </br>
-        <form action="{% url 'compraLocal' %}" method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="prod" value="{{ producto.id }}">
-            <input type="hidden" name="cliente_id" value="{{ request.user.id }}">
-            
-            <button type="submit" class="btn btn-success">
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16">
-                    <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z"/>
-                    <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
-                </svg>
-            </button>
-
-        </form>
-    
-        
+    <!-- Iconos sociales -->
+    <div class="container text-center mt-5">
+        <div class="row">
+            <div class="col">
+                <center>
+                    <div class="iconos-sociales fixed-bottom">
+                        <a href="#" target="_blank" class="mx-2"><img loading="lazy" alt="Sígueme en YouTube" height="40" width="40" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgGxjm__TS1-sOnf69Vbppx-u8CX1ltlmqqtDey3Gml5aV2kZ1BJsK94hMPF-cn870hd7Jk1bx9E50oPbA1fanb90M_2eoVUnnlSQ-Q_axbKVsDmsla6hPg-mRT-9FsPx0coSeVLmQppAbN/s0/Youtube-icono.png" title=" Sigue a Valyrio plus en YouTube "/></a>
+                        <a href="#" target="_blank" class="mx-2"><img loading="lazy" alt="Sígueme en Facebook" height="40" width="40" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh6vlV5enwWRJSXPWHkLi_QEhcy0OAwMgVAqp4F0dvu5sJ5zMBOSAPoqw4ZrMk6GaS_YUtjrK6p_qrHJipWOJz_Ib3NIppNWwx8se0fmswGW1YhYOT4lzTZXssDtPNuzZ7KxvJGR3RDarUt/s0/facebook-icono.png" title="Sigue a Valyrio plus en Facebook"/></a>
+                        <a href="#" target="_blank" class="mx-2"><img loading="lazy" alt="Sígueme en Instagram" height="40" width="40" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEioycSf-8NI3Ff15eeXtdXUO4e888671ildrsPBjKJnTFjzSymZi95xweZpk0Vc6zll0WDyE0pBGj3PWL564QS8VkRxeh_PbW6y6sT9dWJq-xHh1ohUJN737-Qe-c12TRC2kUAbf7TBzxK5/s0/Instagram-icono.png" title="Sigue a Valyrio plus en Instagram"/></a>
+                        <a href="#" target="_blank" class="mx-2"><img loading="lazy" alt="Sígueme en WhatsApp" height="40" width="40" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh1fwppWJk-Z8OVvyOtTxSxBmUMIt702HOt6OSOCVtrKG5GLxCRnPxu6bSj0GDEI3q-FugFOkb82rCvBYMYeM0648TQOjJk9-nFbI4hkOLTpDY3qL-qga9HPTB052Eqay4w3hHZnmW6lENj/s0/whatsapp-icono.png" title="Sigue a Valyrio plus en WhatsApp"/></a>
+                        <a href="#" target="_blank" class="mx-2"><img loading="lazy" alt="Sígueme en TikTok" height="40" width="40" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiFv8UKZ1-41VtEZOmOWZfuQSeNlkHBnbzmMYBIWVbiiEPWv28j9QmxHUOKceoGNe-6XEk31OnWLoNj-nTWrAK8mba-yMPPEqZlLMj3AI3_nnygxwxamLLKrALutw3nRMaDE2_Hzl7MLcWH/s0/tiktok-icono-oscuro.png" title="Sigue a Valyrio plus en TikTok"/></a>
+                    </div>
+                </center>
+            </div>
+        </div>
     </div>
-</div>
 
 {% endblock %}

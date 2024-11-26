@@ -1,54 +1,61 @@
 {% extends "plus/cliente/layout.html" %}
 {% load static %} 
 {% block body %}
-    <style>
-    h1{
+<style>
+    h1 {
         color: blanchedalmond;
     }
-    h3{
-        color: antiquewhite;
+    h3 {
+        color: white;
     }
-    </style>
-    <div style="display: flex; box-shadow: 5px 5px 25px 0px rgba(161,162,10, 0.768);">
-        <div>
-            <img src="{% static 'images/Foto.png' %}" alt="Foto de perfil" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 15px;">
-        </div>
-        <div >
-            <h1>{{ User.nombre }} {{ User.apellido }}</h1>
-            <h3>@{{ User.correo }}</h3>
-        </div>
-        <div style="margin-left: 600px; color: aliceblue;">
-            <h6>Cantidad de compras realizadas</h6>
-            <H6 style="margin-left: 100px;">{{ can }}</H6>
-
-        </div>
+    .table-container {
+        margin: 0 auto; /* Centrar la tabla horizontalmente */
+        max-width: 90%; /* Limitar el ancho total de la tabla */
+    }
+</style>
+<div style="display: flex;">
+    <div>
+        <img src="{% static 'images/perfil.png' %}" alt="Foto de perfil" 
+             style="width: 90px; height: 100px; border-radius: 50%; margin-right: 20px; margin-left: 10px;">   
     </div>
-    
-    <br>
-    <br>
-    <br>
+    <div>
+        <h3>{{ User.nombre }} {{ User.apellido }}</h3>
+        <h5 style="color: white">@{{ User.correo }}</h5>
+    </div>
+    <div style="margin-left: auto; color: aliceblue; text-align: right;">
+        <!-- Botón con margen derecho -->
+        <a href="{% url 'solicitudDevolucion' %}" class="btn btn-danger" style="margin-right: 20px;">Solicitar devolución</a>
+    </div>
+</div>
 
-    <a href="{% url 'solicitudDevolucion' %}" class="btn btn-danger">Solicitar devolucion </a>
+</br>
+<h6 style="color:white; margin-left: 20px;">Cantidad de compras realizadas: {{ can }}</h6>
+<br>
 
-    <table class="table table-dark">
-        <thead>
-          <tr>
-            <th scope="col"># Compra</th>
-            <th scope="col">Total</th>
-            <th scope="col">Fecha</th>
-            <th scope="col">Direccion</th>
-          </tr>
+
+
+<!-- Contenedor de tabla con márgenes -->
+<div style="display: flex; gap: 10px; flex-grow: 1;">
+    <table style="margin: 0 20px; flex: 1;" class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col"># Compra</th>
+                <th scope="col">Total</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Dirección</th>
+            </tr>
         </thead>
         <tbody>
             {% for n, i in Compras_Envios %}
-                <tr>
-                    <th scope="row">{{ forloop.counter }}</th>
-                    <td>{{ n.total }}</td> 
-                    <td>{{ n.fecha_compra }}</td> 
-                    <td>{{ i.direccion }}</td>
-                </tr>
-            {% endfor %} 
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ n.total }}</td>
+                <td>{{ n.fecha_compra }}</td>
+                <td>{{ i.direccion }}</td>
+            </tr>
+            {% endfor %}
         </tbody>
-      </table>
+    </table>
+</div>
 
 {% endblock %}

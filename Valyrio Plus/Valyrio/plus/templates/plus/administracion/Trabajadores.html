@@ -1,14 +1,18 @@
 {% extends "plus/administracion/layout.html" %}
 
 {% block body %}
+</br>
 <div style="display: flex; flex-direction: column; gap: 10px;">
     {% if  user.is_superuser %}
     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
         <!--Activar los botone y crear su views-->
         <a href="{% url 'registerr' %}">
-            <button style="padding: 10px 20px; font-size: 16px; border-radius: 5px;">Nuevo trabajador</button>
+            <button style="padding: 10px 20px; font-size: 16px; border-radius: 5px; margin-left: 20px;" class="btn btn-success">Nuevo Trabajador</button>
         </a>
-        <button style="padding: 10px 20px; font-size: 16px; border-radius: 5px;">Nuevo Repartidor</button>
+        <a href="{% url 'Newrepartidor' %}">
+            <button style="padding: 10px 20px; font-size: 16px; border-radius: 5px; margin-right: 20px;" class="btn btn-success">Nuevo Repartidor</button>
+        </a>
+        
         <!--Fin comentario-->
     </div>
     {% endif %}

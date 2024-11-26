@@ -1,34 +1,37 @@
 {% extends "plus/administracion/layout.html" %}
 
 {% block body %}
-<style>
-    body{
-        color: aliceblue;
-    }
-</style>
-<h3>Crear Nuevo Producto</h3>
-<form method="POST">
-    {% csrf_token %}
-    <div class="form-group">
-        <label for="nombre">Nombre del Producto</label>
-        <input type="text" name="nombre" id="nombre" class="form-control" required>
+<div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;">
+    <div style="background-color: #222; padding: 20px; color: white; display: flex; flex-direction: column; border-radius: 10px; width: 50%; max-width: 600px;">
+        <!-- Contenedor del formulario -->
+        <h3 style="color: #FFFFFF; margin: 0; text-align: center;">Crear Nuevo Producto</h3>
+        <br>
+        <form method="POST" style="margin-left: 20px; margin-right: 20px;">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="nombre" style="color: #FFFFFF;">Nombre del Producto</label>
+                <input type="text" name="nombre" id="nombre" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="nombre" style="color: #FFFFFF;">Descripcion</label>
+                <!-- Textarea para descripción -->
+                <textarea name="descripcion" id="descripcion" class="form-control" rows="4" placeholder="Descripción del producto..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="precio" style="color: #FFFFFF;">Precio</label>
+                <input type="number" step="0.01" name="precio" id="precio" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="peso" style="color: #FFFFFF;">Peso</label>
+                <input type="number" step="0.01" name="peso" id="peso" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="imagen" style="color: #FFFFFF;">Imagen (URL)</label>
+                <input type="url" name="imagen" id="imagen" class="form-control">
+            </div>
+        </br>
+            <button type="submit" class="btn btn-success" style="width: 100%;">Crear Producto</button>
+        </form>
     </div>
-    <div class="form-group">
-        <label for="descripcion">Descripción</label>
-        <input type="text" name="descripcion" id="descripcion" class="form-control">
-    </div>
-    <div class="form-group">
-        <label for="precio">Precio</label>
-        <input type="number" step="0.01" name="precio" id="precio" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label for="peso">Peso</label>
-        <input type="number" step="0.01" name="peso" id="peso" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label for="imagen">Imagen (URL)</label>
-        <input type="url" name="imagen" id="imagen" class="form-control">
-    </div>
-    <button type="submit" class="btn btn-primary">Crear Producto</button>
-</form>
+</div>
 {% endblock %}

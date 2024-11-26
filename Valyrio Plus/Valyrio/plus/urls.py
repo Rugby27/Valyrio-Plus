@@ -36,6 +36,7 @@ urlpatterns = [
     path('inversion/<int:id>/', views.inversion_especifica, name='inversionEspecifica'),
     path('ganancias/', views.ver_ganancias, name='ver_ganancias'),
     path('crear_producto/', views.crear_producto, name='crear_producto'),
+    path('Newrepartidor',views.Newrepartidor, name='Newrepartidor'),
 
 
     #-----------------ambos-----------------------#

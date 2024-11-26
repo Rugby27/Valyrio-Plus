@@ -252,6 +252,26 @@ def login_traba(request):
         return render(request, "plus/administracion/login.html")
 
 ######################################################
+
+def Newrepartidor(request):
+    if request.method =="POST":
+        nombre = request.POST["nombre"]
+        apellido = request.POST["apellido"]
+        telefono = request.POST["telefono"]
+        cedula = request.POST["cedula"]
+        matricula = request.POST["matricula"]
+        
+        repartidor = Repartidor(
+            nombre=nombre,
+            apellido=apellido,
+            telefono=telefono,
+            cedula=cedula,
+            matricula=matricula
+        )
+        repartidor.save()
+        
+    return render(request, "plus/administracion/Newrepartidor.html")
+
 @staff_required
 def register_traba(request):
     if request.method == "POST":

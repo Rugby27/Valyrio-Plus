@@ -2,28 +2,84 @@
 
 {% block body %}
 <style>
-    h6{
-        color: azure;
+    body {
+        background-color: #1e1e2f; /* Fondo oscuro elegante */
+        color: white; /* Texto claro para contraste */
+        font-family: Arial, sans-serif;
+    }
+
+    .details-container {
+        text-align: center;
+        margin: 20px 0;
+        padding: 20px;
+        background-color: #2a2a3d; /* Fondo de detalles */
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .details-container h6 {
+        font-size: 18px;
+        margin: 10px 0;
+    }
+
+    .details-container strong {
+        color: #f39c12; /* Color destacado para los títulos */
+    }
+
+    .table-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .table {
+        background-color: #2a2a3d; /* Fondo de tabla */
+        color: white;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .table thead {
+        background-color: #343a40; /* Fondo del encabezado */
+        color: white;
+        text-align: center;
+    }
+
+    .table tbody tr:hover {
+        background-color: #3d3d52; /* Resaltado al pasar el mouse */
+    }
+
+    .table td, .table th {
+        text-align: center;
+        padding: 10px;
+    }
+
+    .table th {
+        font-weight: bold;
     }
 </style>
-<h6><strong>Fecha:</strong> {{ inversion.fecha_inversion }}</h6>
-<h6><strong>Total:</strong> {{ inversion.total_inversion }}</h6>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Producto</th>
-            <th>Cantidad</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for detalle in detalles %}
-        <tr>
-            <td>{{ detalle.producto.nombre }}</td>
-            <td>{{ detalle.cantidad }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="details-container">
+    <h6><strong>Fecha:</strong> {{ inversion.fecha_inversion }}</h6>
+    <h6><strong>Total:</strong> C$ {{ inversion.total_inversion }}</h6>
+</div>
 
+<div class="table-container">
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Producto</th>
+                <th scope="col">Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detalle in detalles %}
+            <tr>
+                <td>{{ detalle.producto.nombre }}</td>
+                <td>{{ detalle.cantidad }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

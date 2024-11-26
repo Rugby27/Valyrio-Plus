@@ -9,13 +9,13 @@
         </div>
         <!-- Contenedor del formulario -->
         <div style="flex-grow: 1;">
-            <h3 style="color: #FFFFFF; text-align: center;">Registrar nuevo trabajador</h3>
+            <h3 style="color: #FFFFFF; text-align: center;">Registrar nuevo Repartidor</h3>
             </br>
             {% if message %}
                 <div style="color: bisque; margin-bottom: 10px; text-align: center;">{{ message }}</div>
             {% endif %}
 
-            <form action="{% url 'registerr' %}" method="POST" style="margin-left: 20px; margin-right: 20px;">
+            <form action="{% url 'Newrepartidor' %}" method="POST" style="margin-left: 20px; margin-right: 20px;">
                 {% csrf_token %}
                 
                 <div class="form-group">
@@ -39,19 +39,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="correo">Correo electrónico:</label>
-                    <input type="email" class="form-control" id="correo" name="correo" required>
+                    <label for="matricula">Matricula:</label>
+                    <input type="text" class="form-control" id="matricula" name="matricula" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="contraseña">Contraseña:</label>
-                    <input type="password" class="form-control" id="contraseña" name="contraseña" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="fecha">Fecha de nacimiento:</label>
-                    <input type="date" class="form-control" id="fecha" name="fecha" required>
-                </div>
+                
 
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Registrar trabajador</button>
             </form>

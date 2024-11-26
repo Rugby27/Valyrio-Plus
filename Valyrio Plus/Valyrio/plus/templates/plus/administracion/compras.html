@@ -1,42 +1,54 @@
 {% extends "plus/administracion/layout.html" %}
 {% load custom_filters %}
 
-
 {% block body %}
-<a href="{% url 'comprasCanceladas' %}" class="btn btn-danger">Cancelaciones</a>
+</br>
+<a href="{% url 'comprasCanceladas' %}" class="btn btn-danger" style="margin: 0 20px;">Todas las Cancelaciones</a>
+</br>
+</br>
 
- <div style="display: flex; gap: 10px; flex-grow: 1;">
-        <table style="flex: 1;" class="table">
-            <thead class="thead-dark">
+<div style="display: flex; gap: 10px; flex-grow: 1;">
+    <table style="margin: 0 20px; flex: 1;" class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Trabajador</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Total</th>
+                <th scope="col">Acciones</th> <!-- Nueva columna para botones -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for compra in compras %}
                 <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">Cliente</th>
-                    <th scope="col">Trabajador</th>
-                    <th scope="col">Tipo</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for compra in compras %}
-                    <tr>
-                        <th scope="row">
-                            <a href="{% url 'compraEspecifica' id=compra.id %}">{{ compra.id }}</a>
-                        </th>
-                        <td>{{ compra.cliente.nombre }}</td>
-                        <td>{{ compra.trabajador.nombre }}</td>
+                    <th scope="row">
+                        <a href="{% url 'compraEspecifica' id=compra.id %}">{{ compra.id }}</a>
+                    </th>
+                    <td>{{ compra.cliente.nombre }}</td>
+                    <td>{{ compra.trabajador.nombre }}</td>
+                    <td>
                         {% if compra.tipo_compra == False %}
-                            <td> 
-                                Online 
-                                <a href="{% url 'cancelarCompra' id=compra.id %}" class="btn btn-danger">Cancelar</a>
-                            </td>
-                            
+                            Online
                         {% else %}
-                            <td>Tienda</td>
+                            Tienda
                         {% endif %}
-                    </tr>  
-                
-                {% endfor %}
-            </tbody>
-        </table>
-
+                    </td>
+                    <td>{{ compra.total}}</td>
+                    <td>
+                        {% if compra.tipo_compra == False %}
+                            <a href="{% url 'cancelarCompra' id=compra.id %}" class="btn btn-danger">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard2-minus-fill" viewBox="0 0 16 16">
+                                    <path d="M10 .5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5.5.5 0 0 1-.5.5.5.5 0 0 0-.5.5V2a.5.5 0 0 0 .5.5h5A.5.5 0 0 0 11 2v-.5a.5.5 0 0 0-.5-.5.5.5 0 0 1-.5-.5"/>
+                                    <path d="M4.085 1H3.5A1.5 1.5 0 0 0 2 2.5v12A1.5 1.5 0 0 0 3.5 16h9a1.5 1.5 0 0 0 1.5-1.5v-12A1.5 1.5 0 0 0 12.5 1h-.585q.084.236.085.5V2a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 4 2v-.5q.001-.264.085-.5M6 8h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1 0-1"/>
+                                </svg>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>  
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}

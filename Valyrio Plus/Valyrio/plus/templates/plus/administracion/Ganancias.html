@@ -1,30 +1,38 @@
 {% extends "plus/administracion/layout.html" %}
 
 {% block body %}
+</br>
+<div style="display: flex; justify-content: center; align-items: center; min-height: 10vh;">
+    <div style="padding: 20px; border-radius: 10px; text-align: center;">
+        <h2 style="color: #FFFFFF; margin: 0;">Ganancias Mensuales</h2>
+    </div>
+</div>
+</br>
 
-<h2 style="color: aliceblue;">Ganancias Mensuales</h2>
+<div style="display: flex; gap: 10px; flex-grow: 1;">
+    <table style="margin: 0 20px; flex: 1;" class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Mes</th>
+                <th scope="col">Año</th>
+                <th scope="col">Total Inversiones</th>
+                <th scope="col">Total Ventas</th>
+                <th scope="col">Ganancia</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for g in ganancias %}
+            <tr>
+                <td>{{ g.mes }}</td>
+                <td>{{ g.anio }}</td>
+                <td>C$ {{ g.inversion }}</td>
+                <td>C$ {{ g.compra }}</td>
+                <td>C$ {{ g.ganancia }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Mes</th>
-            <th>Año</th>
-            <th>Total Inversiones</th>
-            <th>Total Ventas</th>
-            <th>Ganancia</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for g in ganancias %}
-        <tr>
-            <td>{{ g.mes }}</td>
-            <td>{{ g.anio }}</td>
-            <td>C$ {{ g.inversion }}</td>
-            <td>C$ {{ g.compra }}</td>
-            <td>C$ {{ g.ganancia }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
 
 {% endblock %}
