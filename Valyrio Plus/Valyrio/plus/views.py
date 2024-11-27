@@ -387,8 +387,7 @@ def compraLocal(request):
         
         if producto_id is None or not producto_id.isdigit():
             return HttpResponse("ID del producto inválido")
-        
-        user = User.objects.get(username="Conde18")
+    
 
         cliente = request.user.trabajador
         if not cliente:
