@@ -12,7 +12,7 @@ urlpatterns = [
     path("agregarCarrito",views.agregarCarrito,name="agrecarrito"),
     path("realizarCompra",views.realizar_compra, name="Compra"),
     path("perfil",views.perfil,name="perfil"),
-    path("solicitudDevolucion",views.solicitudDevolucion,name="solicitudDevolucion"),
+    path('solicitudDevolucion/<int:detalle_compra_id>/', views.solicitudDevolucion, name='solicitudDevolucion'),
     
     #-----------------Admin-----------------------#
     path("loggin", views.login_traba, name="loggin"),

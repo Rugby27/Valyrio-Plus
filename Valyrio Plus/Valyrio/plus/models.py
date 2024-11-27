@@ -95,7 +95,7 @@ class Regalias(models.Model):
 
 
 class Compra(models.Model):
-    comprobante = models.CharField(max_length=100)
+    comprobante = models.CharField(max_length=100,null=True, blank=True)
     total = models.FloatField()
     fecha_compra = models.DateField()
     tipo_compra = models.BooleanField()
@@ -139,7 +139,7 @@ class Devolucion(models.Model):
         default='https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/768px-Imagen_no_disponible.svg.png'
     )
     fecha_devolucion = models.DateField(auto_now_add=True)
-    compra = models.ForeignKey(Compra, on_delete=models.CASCADE)
+    detalle_compra = models.ForeignKey(DetalleCompra, on_delete=models.CASCADE,null=True, blank=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     aceptada = models.BooleanField(default=0)
 

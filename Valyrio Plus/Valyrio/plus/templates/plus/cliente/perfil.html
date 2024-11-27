@@ -22,10 +22,7 @@
         <h3>{{ User.nombre }} {{ User.apellido }}</h3>
         <h5 style="color: white">@{{ User.correo }}</h5>
     </div>
-    <div style="margin-left: auto; color: aliceblue; text-align: right;">
-        <!-- Botón con margen derecho -->
-        <a href="{% url 'solicitudDevolucion' %}" class="btn btn-danger" style="margin-right: 20px;">Solicitar devolución</a>
-    </div>
+    
 </div>
 
 </br>
@@ -48,7 +45,9 @@
         <tbody>
             {% for n, i in Compras_Envios %}
             <tr>
-                <th scope="row">{{ forloop.counter }}</th>
+                <th scope="row">
+                    <a href="{% url 'compraEspecifica' id=n.id %}">{{ forloop.counter }}</a>
+                </th>
                 <td>{{ n.total }}</td>
                 <td>{{ n.fecha_compra }}</td>
                 <td>{{ i.direccion }}</td>

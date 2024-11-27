@@ -3,53 +3,54 @@
 {% block body %}
 {% if detalles %}
 <style>
-    body{
+    body {
         overflow-x: hidden;
     }
-    /* Estilos para el contenedor de entrada numérica */
-.quantity-input {
-    display: flex;
-    align-items: center;
-    max-width: 120px;
-}
 
-/* Estilo del botón */
-.quantity-input .btn {
-    width: 32px;
-    height: 38px;
-    padding: 0;
-    border: 1px solid #ced4da;
-    font-size: 18px;
-    font-weight: bold;
-}
+    .quantity-input {
+        display: flex;
+        align-items: center;
+        max-width: 120px;
+    }
 
-/* Estilo del input de cantidad */
-.quantity-input .form-control {
-    text-align: center;
-    font-size: 16px;
-    border-left: none;
-    border-right: none;
-}
+    .quantity-input .btn {
+        width: 32px;
+        height: 38px;
+        padding: 0;
+        border: 1px solid #ced4da;
+        font-size: 18px;
+        font-weight: bold;
+    }
 
-.custom-list {
-        list-style-type: none; /* Quita los puntos de la lista */
-        color: white; /* Cambia el color del texto a blanco */
-        padding: 0; /* Elimina el padding predeterminado */
-        margin: 0; /* Elimina el margen predeterminado */
+    .quantity-input .form-control {
+        text-align: center;
+        font-size: 16px;
+        border-left: none;
+        border-right: none;
+    }
+
+    .custom-list {
+        list-style-type: none;
+        color: white;
+        padding: 0;
+        margin: 0;
     }
 
     .custom-list li {
-        margin-bottom: 5px; /* Opcional: espacio entre los elementos */
+        margin-bottom: 5px;
     }
 
-
+    .payment-url-input {
+        display: none;
+    }
 </style>
+
 {% if messages %}
-    <ul class="custom-list">
-        {% for message in messages %}
-            <li class="{{ message.tags }}" Color >{{ message }}</li>
-        {% endfor %}
-    </ul>
+<ul class="custom-list">
+    {% for message in messages %}
+    <li class="{{ message.tags }}" style="color: white;">{{ message }}</li>
+    {% endfor %}
+</ul>
 {% endif %}
 
 <form action="{% url 'Compra' %}" method="POST" enctype="multipart/form-data">
@@ -68,10 +69,9 @@
                             <h6 class="card-title">Producto: {{ detalle.producto.nombre }}</h6>
                             <p>{{ detalle.producto.descripcion }}</p>
                             <h6>Precio: {{ detalle.producto.precio }}</h6>
-                            <!-- Input para la cantidad, con un name único para cada producto -->
                             <div class="input-group quantity-input">
                                 <button type="button" class="btn btn-outline-secondary" onclick="decrement('{{ detalle.id }}')">-</button>
-                                <input type="number" name="cantidad_{{ detalle.id }}" id="cantidad_{{ detalle.id }}" min="1" value="{{ detalle.cantidad }}" class="form-control text-center">
+                                <input type="number" name="cantidad_{{ detalle.id }}" id="cantidad_{{ detalle.id }}" min="1" value="{{ detalle.cantidad }}" class="form-control text-center" data-precio="{{ detalle.producto.precio }}" data-peso="{{ detalle.producto.peso }}">
                                 <button type="button" class="btn btn-outline-secondary" onclick="increment('{{ detalle.id }}')">+</button>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="departamento" class="form-label">Departamento</label><br>
-                        <select name="destino" id="destino" required>
+                        <select name="destino" id="destino" class="form-control" required>
                             <option value="Managua">Managua</option>
                             <option value="Rio San Juan">Rio San Juan</option>
                             <option value="Bluefields">Bluefields</option>
@@ -101,13 +101,33 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="numero" class="form-label">Número</label>
-                        <input type="text" name="numero" id="numero" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
                         <label for="telefono" class="form-label">Teléfono</label>
                         <input type="text" name="telefono" id="telefono" class="form-control" required>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="tipo_pago" class="form-label">Método de pago</label>
+                        <select name="tipo_pago" id="tipo_pago" class="form-control" onchange="togglePaymentUrlInput()" required>
+                            <option value="Depósito">Depósito</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Efectivo">Efectivo</option>
+                        </select>
+                    </div>
+
+                    <!-- Input para la URL de la imagen, visible solo si el tipo de pago es Depósito o Efectivo -->
+                    <div id="payment-url-input" class="payment-url-input mb-3">
+                        <label for="imagen_pago" class="form-label">URL de la imagen (depósito/efectivo)</label>
+                        <input type="url" name="imagen_pago" id="imagen_pago" class="form-control" placeholder="URL de la imagen">
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Resumen</h5>
+                            <p>Tarifa de envío: <span id="tarifa-envio">0</span> C$</p>
+                            <p>Total: <span id="total-compra">0</span> C$</p>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn btn-dark mt-3">Realizar compra</button>
                 </div>
             </div>
@@ -116,24 +136,87 @@
 </form>
 
 {% else %}
-</br>
+<br>
 <div style="display: flex; justify-content: center; align-items: center; min-height: 10vh;">
     <div style="background-color: #222; padding: 20px; border-radius: 10px; text-align: center;">
-        <h2 style="color: #FFFFFF; margin: 0;">Aun no has añadido productos al carrito</h2>
+        <h2 style="color: #FFFFFF; margin: 0;">Aún no has añadido productos al carrito</h2>
     </div>
 </div>
 {% endif %}
 
 <script>
+    const tarifas = {
+        "Managua": [{ limite: 11, tarifa: 100 }, { limite: 22, tarifa: 180 }, { limite: 33, tarifa: 220 }],
+        "Rio San Juan": [{ limite: 11, tarifa: 400 }, { limite: 22, tarifa: 450 }, { limite: 33, tarifa: 510 }],
+        "Bluefields": [{ limite: 11, tarifa: 210 }, { limite: 22, tarifa: 560 }, { limite: 33, tarifa: 925 }],
+        "Puerto Cabezas": [{ limite: 11, tarifa: 210 }, { limite: 22, tarifa: 560 }, { limite: 33, tarifa: 925 }],
+        "Resto departamentos": [{ limite: 11, tarifa: 130 }, { limite: 22, tarifa: 220 }, { limite: 33, tarifa: 275 }]
+    };
+
+    function calcularTarifaEnvio(peso, destino) {
+        const tarifasDestino = tarifas[destino];
+        const tarifaMaxima = tarifasDestino[tarifasDestino.length - 1].tarifa; 
+
+        for (const tarifa of tarifasDestino) {
+            if (peso <= tarifa.limite) {
+                return tarifa.tarifa;
+            }
+        }
+        return tarifaMaxima;
+    }
+
+    function actualizarResumen() {
+        let pesoTotal = 0;
+        let subtotal = 0;
+
+        document.querySelectorAll('.quantity-input input').forEach(input => {
+            const cantidad = parseInt(input.value) || 0;
+            const precio = parseFloat(input.dataset.precio);
+            const peso = parseFloat(input.dataset.peso);
+            pesoTotal += cantidad * peso;
+            subtotal += cantidad * precio;
+        });
+
+        const destino = document.getElementById("destino").value;
+        const tarifaEnvio = calcularTarifaEnvio(pesoTotal, destino);
+
+        document.getElementById("tarifa-envio").textContent = tarifaEnvio.toFixed(2);
+        document.getElementById("total-compra").textContent = (subtotal + tarifaEnvio).toFixed(2);
+    }
+
+    document.querySelectorAll('.quantity-input input').forEach(input => {
+        input.addEventListener('input', actualizarResumen);
+    });
+    document.getElementById("destino").addEventListener('change', actualizarResumen);
+
     function increment(id) {
-    const input = document.getElementById(`cantidad_${id}`);
-    input.stepUp(); // Incrementa el valor en 1
-}
+        const input = document.getElementById(`cantidad_${id}`);
+        input.stepUp();
+        actualizarResumen();
+    }
 
-function decrement(id) {
-    const input = document.getElementById(`cantidad_${id}`);
-    if (input.value > 1) input.stepDown(); // Decrementa el valor en 1, sin permitir valores menores a 1
-}
+    function decrement(id) {
+        const input = document.getElementById(`cantidad_${id}`);
+        if (input.value > 1) {
+            input.stepDown();
+            actualizarResumen();
+        }
+    }
 
+    // Función para mostrar u ocultar el campo de URL de la imagen dependiendo del tipo de pago
+    function togglePaymentUrlInput() {
+        const tipoPago = document.getElementById("tipo_pago").value;
+        const paymentUrlInput = document.getElementById("payment-url-input");
+        if (tipoPago === "Depósito" || tipoPago === "Transferencia") {
+            paymentUrlInput.style.display = "block";
+        } else {
+            paymentUrlInput.style.display = "none";
+        }
+    }
+
+    // Inicializa la vista
+    togglePaymentUrlInput();
+    actualizarResumen();
 </script>
+
 {% endblock %}

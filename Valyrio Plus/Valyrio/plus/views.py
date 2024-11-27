@@ -183,41 +183,63 @@ def agregarCarrito(request):
     return HttpResponseRedirect(reverse("index"))  
 
 
-def solicitudDevolucion(request):
+def solicitudDevolucion(request, detalle_compra_id):
     if request.method == "POST":
         # Obtener los datos del formulario
         descripcion = request.POST.get("descripcion")
         imagen = request.POST.get("imagen")
-        compra_id = request.POST.get("compra")
         
-        if not descripcion or not compra_id:
+        if not descripcion or not detalle_compra_id:
             messages.error(request, "Por favor, complete todos los campos requeridos.")
             return redirect("solicitud_devolucion")  # Redirigir para volver a intentar
         
-        # Verificar si la compra existe
+        # Verificar si el detalle de compra existe y pertenece al cliente
         try:
-            compra = Compra.objects.get(id=compra_id, cliente=request.user.cliente)
-        except Compra.DoesNotExist:
-            messages.error(request, "La compra no existe o no es válida.")
+            detalle_compra = DetalleCompra.objects.get(
+                id=detalle_compra_id, compra__cliente=request.user.cliente
+            )
+        except DetalleCompra.DoesNotExist:
+            messages.error(request, "El artículo seleccionado no es válido.")
             return redirect("solicitud_devolucion")
         
-        # Crear la devolución
+        # Crear la devolución para el detalle de compra
         devolucion = Devolucion(
             descripcion=descripcion,
             imagen=imagen or 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/768px-Imagen_no_disponible.svg.png',
-            compra=compra,
-            cliente=request.user.cliente,
+            detalle_compra=detalle_compra,  # Asociar con el detalle de compra
+            cliente=request.user.cliente,  # Asociar con el cliente
         )
         devolucion.save()
 
         messages.success(request, "Devolución solicitada exitosamente.")
         return redirect("perfil")  # Redirigir a una página de confirmación o listado
 
-    compras = Compra.objects.filter(cliente=request.user.cliente)
+    # Aquí ya no necesitas usar `request.GET`, el ID de `detalle_compra` ya está disponible como argumento
+    try:
+        detalle_compra = DetalleCompra.objects.get(
+            id=detalle_compra_id, compra__cliente=request.user.cliente
+        )
+        compras = [detalle_compra.compra]  # Solo la compra relacionada con el detalle
+        detalles_por_compra = {
+            detalle_compra.compra.id: [
+                {
+                    "id": detalle.id,
+                    "producto": detalle.producto.nombre,
+                    "cantidad": detalle.cantidad,
+                }
+                for detalle in DetalleCompra.objects.filter(compra=detalle_compra.compra)
+            ]
+        }
+    except DetalleCompra.DoesNotExist:
+        messages.error(request, "No se pudo encontrar el artículo o no es válido.")
+        return redirect("solicitud_devolucion")
 
-    return render(request, "plus/cliente/Devolu.html", {
-        "compras": compras
+    return render(request, 'plus/cliente/Devolu.html', {
+        'detalles_por_compra': detalles_por_compra,
+        'detalle_compra': detalle_compra,  # Pasamos el detalle de compra al template
     })
+
+
 
 #---------------------------------Productos------------------------------#
 ######################################################
@@ -289,7 +311,8 @@ def register_traba(request):
             user = User.objects.create_user(
                 username=nombre,  # Usamos el nombre como el nombre de usuario
                 email=correo,
-                password=contraseña  # Almacenamos la contraseña de manera segura
+                password=contraseña,  # Almacenamos la contraseña de manera segura
+                is_staff=True 
             )
             user.save()
 
@@ -424,7 +447,7 @@ def comprasCanceladas(request):
     })
 
 
-@staff_required 
+
 def compraEspecifica(request, id):
     compra = Compra.objects.get(id=id)
     detalles = DetalleCompra.objects.filter(compra=compra)
@@ -442,6 +465,8 @@ def compraEspecifica(request, id):
     if envio:
         context['envio'] = envio
 
+    if not request.user.is_staff:
+        return render(request, 'plus/cliente/ComEspe.html', context)
     return render(request, 'plus/administracion/ComEspe.html', context)
 
 @staff_required
@@ -456,10 +481,14 @@ def devolucion(request):
 @staff_required
 def aceptarDevolucion(request, id):
     if request.method == 'POST':
+        # Obtener la devolución mediante el ID
         dev = get_object_or_404(Devolucion, pk=id)
+        # Cambiar el estado de la devolución a aceptada
         dev.aceptada = True
-        dev.save() 
+        dev.save()
+        # Redirigir a la página de devoluciones (o a la página que desees)
         return redirect('devolucion')
+
 
 
 @staff_required  
@@ -653,7 +682,6 @@ def logout_view(request):
 
 
 ######################################################
-
 def realizar_compra(request):
     if request.method == "POST":
         # Filtrar los detalles de la compra
@@ -706,7 +734,6 @@ def realizar_compra(request):
         # Verificar o crear cliente
         if request.user.is_staff:
             tipo_usuario = request.POST.get("tipo_usuario")
-            print(tipo_usuario)
             if tipo_usuario == "usuario":  # Cliente existente
                 correo_cliente = request.POST.get("cliente")
                 cliente = Cliente.objects.filter(correo=correo_cliente).first()
@@ -717,12 +744,11 @@ def realizar_compra(request):
                     return redirect("carrito")  # Redirige si no se encuentra el cliente
             elif tipo_usuario == "nuevo":  # Cliente sin cuenta
                 nombre = request.POST.get("name")
-                correo = request.POST.get("correo","default@gmail.com")
+                correo = request.POST.get("correo", "default@gmail.com")
                 contraseña = request.POST.get("contraseña", "1234")
                 
-
                 # Crear un nuevo cliente y asignar el cliente a la compra
-                usuario = User.objects.create_user(username=correo, email=correo, password=contraseña)
+                usuario = User.objects.create_user(username=nombre, email=correo, password=contraseña)
                 cliente = Cliente.objects.create(
                     user=usuario,
                     nombre=nombre,
@@ -736,6 +762,18 @@ def realizar_compra(request):
                 # Asociar cliente a la compra
                 compra.cliente = cliente
                 compra.save()
+
+        # Obtener el método de pago seleccionado
+        metodo_pago_id = request.POST.get("tipo_pago")  # Suponiendo que se envía el ID del metodo_pago
+        metodo_pago = MetodoPago.objects.filter(tipo_metodo_pago=metodo_pago_id).first() 
+        print(metodo_pago) # Obtener el objeto MetodoPago
+        imagen_comprobante = request.POST.get('imagen_pago')
+        print(imagen_comprobante)
+        if metodo_pago:
+            # Asignar el método de pago a la compra
+            
+            compra.metodo_pago = metodo_pago
+            compra.comprobante = imagen_comprobante
 
         # Confirmar compra
         if compra:

@@ -15,6 +15,7 @@
                 <th scope="col">Cliente</th>
                 <th scope="col">Trabajador</th>
                 <th scope="col">Tipo</th>
+                <th scope="col">Metodo de pago</th>
                 <th scope="col">Total</th>
                 <th scope="col">Acciones</th> <!-- Nueva columna para botones -->
             </tr>
@@ -34,7 +35,8 @@
                             Tienda
                         {% endif %}
                     </td>
-                    <td>{{ compra.total}}</td>
+                    <td>{{ compra.metodo_pago }}</td>
+                    <td>C$ {{ compra.total}}</td>
                     <td>
                         {% if compra.tipo_compra == False %}
                             <a href="{% url 'cancelarCompra' id=compra.id %}" class="btn btn-danger">
