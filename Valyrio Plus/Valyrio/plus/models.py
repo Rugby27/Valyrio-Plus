@@ -13,10 +13,7 @@ class Producto(models.Model):
     nombre = models.CharField(max_length=40)
     cantidad = models.IntegerField()
     peso = models.FloatField()
-    imagen = models.URLField(
-        verbose_name='Imagen del producto',
-        default='https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/768px-Imagen_no_disponible.svg.png'
-    )
+    imagen = models.ImageField(upload_to="productos", null=True)
 
     def __str__(self):
         return f"Producto {self.id} es {self.nombre} con precio {self.precio}"
@@ -95,7 +92,7 @@ class Regalias(models.Model):
 
 
 class Compra(models.Model):
-    comprobante = models.CharField(max_length=100,null=True, blank=True)
+    comprobante = models.ImageField(upload_to="comprobantes", null=True)
     total = models.FloatField()
     fecha_compra = models.DateField()
     tipo_compra = models.BooleanField()
@@ -134,10 +131,7 @@ class Envio(models.Model):
 
 class Devolucion(models.Model):
     descripcion = models.CharField(max_length=100)
-    imagen = models.URLField(
-        verbose_name='Imagen de la devolución',
-        default='https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/768px-Imagen_no_disponible.svg.png'
-    )
+    imagen = models.ImageField(upload_to="devoluciones", null=True)
     fecha_devolucion = models.DateField(auto_now_add=True)
     detalle_compra = models.ForeignKey(DetalleCompra, on_delete=models.CASCADE,null=True, blank=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)

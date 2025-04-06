@@ -14,7 +14,7 @@
                 <div style="color: red; margin-bottom: 10px; text-align: center;">{{ message }}</div>
             {% endif %}
 
-            <form method="POST" style="margin-left: 20px; margin-right: 20px;">
+            <form method="POST" enctype="multipart/form-data" style="margin-left: 20px; margin-right: 20px;">
                 {% csrf_token %}
                 
                 {% if detalle_compra %}
@@ -36,7 +36,13 @@
 
                 <div class="form-group">
                     <label for="imagen" style="color: #FFFFFF;">Imagen del desperfecto:</label>
-                    <input type="url" class="form-control" id="imagen" name="imagen" placeholder="URL de la imagen">
+                    <input type="file" class="form-control" id="imagen" name="imagen" placeholder="URL de la imagen">
+                </br>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-danger">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
 
                 <input type="hidden" name="detalle_compra" value="{{ detalle_compra.id }}">

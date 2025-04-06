@@ -10,7 +10,7 @@
             <div class="col-12 col-md-6 col-lg-3">
                 <a href="{% url 'productos' id=producto.id %}" style="text-decoration: none; color: inherit;">
                     <div class="card fixed-size-card" style="background-color: black; color: white;">
-                        <img class="card-img-top" src="{{ producto.imagen }}" alt="{{ producto.nombre }}">
+                        <img class="card-img-top" src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
                         <div class="card-body">
                             <h5 class="card-title">{{ producto.precio }} C$</h5>
                             <p class="card-text" style="font-size: 12px; color: gray;">{{ producto.nombre }}</p>

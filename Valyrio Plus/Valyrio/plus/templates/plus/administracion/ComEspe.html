@@ -45,6 +45,15 @@
                  <TD>C$ {{ compra.total|floatformat:2 }}</TD>
                  {% endif %}
              </tr>
+             {% if compra.comprobante and metodo_pago.id == 2 or metodo_pago.id == 3 %}
+        <tr>
+        <th>Comprobante</th>
+        <td colspan="4" style="text-align: left;">
+            <img src="{{ compra.comprobante.url }}" style="max-width: 300px; height: auto; display: inline-block;">
+        </td>
+    </tr>
+{% endif %}
+
          </tbody>
      </table>
 </div>

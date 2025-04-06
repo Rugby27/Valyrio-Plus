@@ -62,7 +62,7 @@
             <div class="card mb-3">
                 <div class="row g-0 align-items-center">
                     <div class="col-md-4">
-                        <img src="{{ detalle.producto.imagen }}" class="img-fluid rounded-start" alt="Imagen del producto">
+                        <img src="{{ detalle.producto.imagen.url }}" class="img-fluid rounded-start" alt="Imagen del producto">
                     </div>
                     <div class="col-md-8">
                         <div class="card-body">
@@ -108,16 +108,21 @@
                     <div class="mb-3">
                         <label for="tipo_pago" class="form-label">Método de pago</label>
                         <select name="tipo_pago" id="tipo_pago" class="form-control" onchange="togglePaymentUrlInput()" required>
-                            <option value="Depósito">Depósito</option>
-                            <option value="Transferencia">Transferencia</option>
-                            <option value="Efectivo">Efectivo</option>
+                            <option value="2">Depósito</option>
+                            <option value="3">Transferencia</option>
+                            <option value="1">Efectivo</option>
                         </select>
                     </div>
 
                     <!-- Input para la URL de la imagen, visible solo si el tipo de pago es Depósito o Efectivo -->
                     <div id="payment-url-input" class="payment-url-input mb-3">
-                        <label for="imagen_pago" class="form-label">URL de la imagen (depósito/efectivo)</label>
-                        <input type="url" name="imagen_pago" id="imagen_pago" class="form-control" placeholder="URL de la imagen">
+                        <label for="imagen_pago" class="form-label">Comprobante - imagen (depósito/transferencia)</label>
+                        <input type="file" name="imagen_pago" id="imagen_pago" class="form-control" placeholder="URL de la imagen">
+                    </br>
+                    <p>BAC - 368642930</p>
+                    <p>BANPRO - 1002000181086</P>
+                    <P>LAFISE - 117059300</p>
+                    <p>BDF - 6013812142</p>
                     </div>
 
                     <div class="card">
@@ -207,7 +212,7 @@
     function togglePaymentUrlInput() {
         const tipoPago = document.getElementById("tipo_pago").value;
         const paymentUrlInput = document.getElementById("payment-url-input");
-        if (tipoPago === "Depósito" || tipoPago === "Transferencia") {
+        if (tipoPago === "2" || tipoPago === "3") {
             paymentUrlInput.style.display = "block";
         } else {
             paymentUrlInput.style.display = "none";

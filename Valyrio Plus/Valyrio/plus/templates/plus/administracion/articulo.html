@@ -6,7 +6,7 @@
     <div class="row align-items-start">
         <!-- Contenedor de la imagen -->
         <div class="col-md-6 text-center mb-4">
-            <img src="{{ producto.imagen }}" alt="{{ producto.nombre }}" class="img-fluid rounded shadow w-100" style="max-height: 400px; object-fit: cover;">
+            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="img-fluid rounded shadow w-100" style="max-height: 400px; object-fit: cover;">
         </div>
 
         <!-- Contenedor del texto -->
@@ -14,6 +14,7 @@
             <h1 class="text-white">{{ producto.nombre }}</h1>
         </br>
             <h3 class="text-success">{{ producto.precio }} C$</h3>
+            <p class="text-light">{{ producto.descripcion|linebreaksbr }}</p>
             <p class="text-light"><strong>Existencias Disponibles:</strong> {{ producto.cantidad }}</p>
         </br>
             <form action="{% url 'compraLocal' %}" method="POST" class="mt-4">

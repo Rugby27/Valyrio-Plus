@@ -8,7 +8,11 @@ from django.contrib import messages
 from django.db.models import Q, Count
 from django.db.models.functions import ExtractMonth, ExtractYear
 from django.db.models import Sum
+from django.utils import timezone
+from datetime import date       
 from .models import *
+from datetime import timedelta, datetime
+from django.utils.timezone import now, make_aware
 
 #para verificar su un user es staff(los trabajadores son staff)
 
@@ -64,8 +68,8 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:
-            return render(request, "plus/cliente/index.html", {
-                "message": "Invalid username and/or password."
+            return render(request, "plus/cliente/login.html", {
+                "message": "Correo o contraseña invalida"
             })
     else:
         return render(request, "plus/cliente/login.html")
@@ -187,11 +191,15 @@ def solicitudDevolucion(request, detalle_compra_id):
     if request.method == "POST":
         # Obtener los datos del formulario
         descripcion = request.POST.get("descripcion")
-        imagen = request.POST.get("imagen")
+        imagen = request.FILES.get("imagen")
         
-        if not descripcion or not detalle_compra_id:
-            messages.error(request, "Por favor, complete todos los campos requeridos.")
-            return redirect("solicitud_devolucion")  # Redirigir para volver a intentar
+    
+        
+        
+        
+        if not imagen:
+            messages.error(request, "Debe adjuntar una imagen para solicitar la devolución.")
+            return redirect("solicitudDevolucion", detalle_compra_id)
         
         # Verificar si el detalle de compra existe y pertenece al cliente
         try:
@@ -205,7 +213,7 @@ def solicitudDevolucion(request, detalle_compra_id):
         # Crear la devolución para el detalle de compra
         devolucion = Devolucion(
             descripcion=descripcion,
-            imagen=imagen or 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/768px-Imagen_no_disponible.svg.png',
+            imagen=imagen,
             detalle_compra=detalle_compra,  # Asociar con el detalle de compra
             cliente=request.user.cliente,  # Asociar con el cliente
         )
@@ -267,7 +275,7 @@ def login_traba(request):
             return HttpResponseRedirect(reverse("prods"))
         else:
             return render(request, "plus/administracion/login.html", {
-                "message": "Invalid username and/or password."
+                "message": "Correo o contraseña invalida"
             })
     else:
         logout(request)
@@ -450,14 +458,30 @@ def comprasCanceladas(request):
 def compraEspecifica(request, id):
     compra = Compra.objects.get(id=id)
     detalles = DetalleCompra.objects.filter(compra=compra)
+    metodo_pago = compra.metodo_pago
 
-    # Verificar si existe un envio asociado a la compra
+    # Convertir fecha_compra en datetime con zona horaria
+    if isinstance(compra.fecha_compra, datetime):
+        fecha_compra = compra.fecha_compra  # Ya es datetime
+    else:
+        fecha_compra = datetime.combine(compra.fecha_compra, datetime.min.time())
+
+    # Hacer que fecha_compra sea "aware" (con zona horaria)
+    fecha_compra = make_aware(fecha_compra)
+
+    # Calcular el tiempo límite
+    tiempo_limite = fecha_compra + timedelta(hours=48)
+    dentro_de_48_horas = now() <= tiempo_limite  # Ahora ambas fechas son comparables
+
+    # Verificar si existe un envío asociado a la compra
     envio = Envio.objects.filter(compra=compra).first()
 
     # Pasar las variables al contexto
     context = {
         'compra': compra,
         'detalles': detalles,
+        'metodo_pago': metodo_pago,
+        'dentro_de_48_horas': dentro_de_48_horas
     }
 
     # Solo agregar 'envio' si existe un envío
@@ -659,7 +683,7 @@ def crear_producto(request):
         descripcion = request.POST.get('descripcion', 'Sin descripción')
         precio = request.POST.get('precio')
         peso = request.POST.get('peso')
-        imagen = request.POST.get('imagen', 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/768px-Imagen_no_disponible.svg.png')
+        imagen = request.FILES.get('imagen')    
         
         # Crear un nuevo producto
         producto = Producto(
@@ -764,18 +788,21 @@ def realizar_compra(request):
 
         # Obtener el método de pago seleccionado
         metodo_pago_id = request.POST.get("tipo_pago")  # Suponiendo que se envía el ID del metodo_pago
-        metodo_pago = MetodoPago.objects.filter(tipo_metodo_pago=metodo_pago_id).first() 
+        print(metodo_pago_id)
+        metodo_pago = MetodoPago.objects.filter(id=metodo_pago_id).first() 
         print(metodo_pago) # Obtener el objeto MetodoPago
-        imagen_comprobante = request.POST.get('imagen_pago')
+        imagen_comprobante = request.FILES.get('imagen_pago')   
         print(imagen_comprobante)
         if metodo_pago:
             # Asignar el método de pago a la compra
             
             compra.metodo_pago = metodo_pago
+            
+        if imagen_comprobante: 
             compra.comprobante = imagen_comprobante
-
         # Confirmar compra
         if compra:
+            compra.fecha_compra = date.today()
             compra.total = sum(detalle.producto.precio * detalle.cantidad for detalle in detalles)  # Calcula el total
             compra.comfimada = True
             compra.save()

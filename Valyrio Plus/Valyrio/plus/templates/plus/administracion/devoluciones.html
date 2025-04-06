@@ -19,12 +19,13 @@
                 <tr>
                     <th scope="row">{{ devolucion.cliente.nombre }}</th>
                     <td>
-                        <ul>
-                            {% for detalle in devolucion.compra.detallecompra_set.all %}
-                                <li>{{ detalle.producto.nombre }}: {{ detalle.cantidad }}</li>
-                            {% endfor %}
-                        </ul>
+                        {% if devolucion.detalle_compra and devolucion.detalle_compra.producto %}
+                            {{ devolucion.detalle_compra.producto.nombre }}
+                        {% else %}
+                            No disponible
+                        {% endif %}
                     </td>
+                    
                     <td>{{ devolucion.descripcion }}</td>
                     <td>{{ devolucion.fecha_devolucion  }}</td>
                 </tr>
@@ -39,6 +40,7 @@
                     <th scope="col">prods</th>
                     <th scope="col">Motivos</th>
                     <th scope="col">Fecha</th>
+                    <th scope="col">Imagen</th>
                     <th scope="col">Aceptar</th>
                 </tr>
             </thead>
@@ -47,14 +49,23 @@
                 <tr>
                     <th scope="row">{{ devolucion.cliente.nombre }}</th>
                     <td>
-                        <ul>
-                            {% for detalle in devolucion.compra.detallecompra_set.all %}
-                                <li>{{ detalle.producto.nombre }}: {{ detalle.cantidad }}</li>
-                            {% endfor %}
-                        </ul>
+                        {% if devolucion.detalle_compra and devolucion.detalle_compra.producto %}
+                            {{ devolucion.detalle_compra.producto.nombre }}
+                        {% else %}
+                            No disponible
+                        {% endif %}
                     </td>
+                    
                     <td>{{ devolucion.descripcion }}</td>
                     <td>{{ devolucion.fecha_devolucion  }}</td>
+                    <td>
+                        {% if devolucion.imagen %}
+    <img src="{{ devolucion.imagen.url }}" style="max-width: 100px; height: auto; display: inline-block;">
+{% else %}
+    <p style="color: red;">No hay imagen disponible</p>
+{% endif %}
+
+                    </td>
                     <td>
                         <form method="POST" action="{% url 'aceptarDevolucion' devolucion.id %}">
                             {% csrf_token %}
