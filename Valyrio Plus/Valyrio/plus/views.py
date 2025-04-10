@@ -191,12 +191,7 @@ def solicitudDevolucion(request, detalle_compra_id):
     if request.method == "POST":
         # Obtener los datos del formulario
         descripcion = request.POST.get("descripcion")
-        imagen = request.FILES.get("imagen")
-        
-    
-        
-        
-        
+        imagen = request.FILES.get("imagen") 
         if not imagen:
             messages.error(request, "Debe adjuntar una imagen para solicitar la devolución.")
             return redirect("solicitudDevolucion", detalle_compra_id)
@@ -800,6 +795,11 @@ def realizar_compra(request):
             
         if imagen_comprobante: 
             compra.comprobante = imagen_comprobante
+
+        if not imagen_comprobante:
+            messages.error(request, "Debe adjuntar una imagen del comprobante de pago.")
+            return redirect("carrito")
+                    
         # Confirmar compra
         if compra:
             compra.fecha_compra = date.today()

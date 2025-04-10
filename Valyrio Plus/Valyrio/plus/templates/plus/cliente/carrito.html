@@ -45,13 +45,6 @@
     }
 </style>
 
-{% if messages %}
-<ul class="custom-list">
-    {% for message in messages %}
-    <li class="{{ message.tags }}" style="color: white;">{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
 
 <form action="{% url 'Compra' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
@@ -123,6 +116,14 @@
                     <p>BANPRO - 1002000181086</P>
                     <P>LAFISE - 117059300</p>
                     <p>BDF - 6013812142</p>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                        {% endif %}
+                        
                     </div>
 
                     <div class="card">

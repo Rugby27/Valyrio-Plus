@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
+from django.utils import timezone
 class User(AbstractUser):
     pass
 
@@ -101,7 +101,7 @@ class Compra(models.Model):
     metodo_pago = models.ForeignKey(MetodoPago, on_delete=models.CASCADE)
     comfimada = models.BooleanField(default=0) #Si ya se pago
     Cancelada = models.BooleanField(default=0) # si el cliente rechaso el envio   
-
+    
     def __str__(self):
         return f"Compra {self.id} de {self.total} por "
 
